@@ -14,12 +14,21 @@
         <KeyBinding Modifiers="Ctrl" Key="O" Command="{Binding OpenRepoCommand}" />
     </Window.InputBindings>
     <Window.Resources>
+        <Style TargetType="MenuItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Height" Value="Auto"/>
+        </Style>
+        <Style TargetType="Menu">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
         <converters:NullToVisibilityConverter x:Key="ntv"/>
         <converters:CountToVisibilityConverter x:Key="cvc" />
         <datacontext:DataContextProxy x:Key="proxy" Data="{Binding}"/>
     </Window.Resources>
     <DockPanel>
-        <ToolBar DockPanel.Dock="Top">
+        <ToolBar DockPanel.Dock="Top" Padding="0" Margin="0">
             <Menu Background="#00000000">
                 <MenuItem>
                     <MenuItem.Resources>

@@ -34,7 +34,7 @@ internal class RepoInfo
 			}
 			catch (Exception ex)
 			{
-				return new ErrorGitIntegration();
+				return new ErrorGitIntegration(ex);
 			}
 		});
 	}
@@ -44,6 +44,12 @@ internal class RepoInfo
 
 class ErrorGitIntegration : IGitIntegration
 {
+	public ErrorGitIntegration(Exception ex)
+	{
+		Ex = ex;
+	}
+	public Exception Ex { get; }
+
 	string IGitIntegration.GetActiveBranchName()
 	{
 		return "Bad Repo";
@@ -65,4 +71,6 @@ internal class UiServiceLocator
     }
 
     public IGitIntegrationFactory GitIntegrationFactory;
+
+	public MainWindow MainWindow;
 }

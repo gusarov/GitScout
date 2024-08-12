@@ -20,6 +20,7 @@ public class Executor
 			RedirectStandardInput = true,
 			RedirectStandardOutput = true,
 			UseShellExecute = false,
+			CreateNoWindow = true,
 		};
 
 		var process = Process.Start(psi);

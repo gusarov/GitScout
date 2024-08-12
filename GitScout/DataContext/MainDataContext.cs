@@ -1,5 +1,6 @@
 ﻿using GitScout.Commands;
 using GitScout.Settings;
+using GitScout.Utils;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
@@ -70,7 +71,7 @@ internal class MainDataContext : ViewModel
 					IsFolderPicker = true,
 				};
 				retry:
-				if (_fbd.ShowDialog() == CommonFileDialogResult.Ok && Directory.Exists(_fbd.FileName))
+				if (_fbd.ShowDialog(UiServiceLocator.Instance.MainWindow) == CommonFileDialogResult.Ok && Directory.Exists(_fbd.FileName))
 				{
 					var newPath = _fbd.FileName;
 					var existing = ReposList.Repos.FirstOrDefault(x => string.Equals(x.Path, newPath, StringComparison.InvariantCultureIgnoreCase));
@@ -86,9 +87,13 @@ internal class MainDataContext : ViewModel
 						{
 							Path = newPath,
 						};
-						if (repoInfo.Git is ErrorGitIntegration)
+						if (repoInfo.Git is ErrorGitIntegration ex)
 						{
-							MessageBox.Show("This is not a git repo.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+							MessageBox.Show(UiServiceLocator.Instance.MainWindow
+								, $"This is not a git repo.{Environment.NewLine}{ex.Ex.Message}"
+								, $"{HumanReadable.Instance.GetHumanReadableExceptionType(ex.Ex)}"
+								, MessageBoxButton.OK
+								, MessageBoxImage.Error);
 							goto retry;
 						}
 						else
