@@ -71,6 +71,19 @@ public abstract class GitIntegrationTests
 		Assert.IsTrue(branches.Any(x => x == "branch1"));
 		Assert.IsTrue(branches.Any(x => x == "branch2"));
 	}
+
+	[TestMethod]
+	public void Should_20_retrieve_commits()
+	{
+		var repo = TestGitRepoFactory.Instance.GetRepo();
+
+		repo.EnsureBranch("branch1");
+		repo.EnsureBranch("branch2");
+
+		var branches = _sut.GetBranchNames().ToArray();
+		Assert.IsTrue(branches.Any(x => x == "branch1"));
+		Assert.IsTrue(branches.Any(x => x == "branch2"));
+	}
 }
 
 public class TestGitRepoFactory
@@ -91,7 +104,7 @@ public class TestGitRepoFactory
 
 public class TestGitRepo
 {
-	string _path;
+	private readonly string _path;
 
 	public string RepoPath { get => _path; }
 

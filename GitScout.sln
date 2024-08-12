@@ -15,6 +15,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitScout.Git.Tests", "GitSc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitScout.Tests.ConsoleWriter", "GitScout.Tests.ConsoleWriter\GitScout.Tests.ConsoleWriter.csproj", "{2B2F2E4A-D492-4B1C-A7C5-81FCBA1199A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitScout.Settings", "GitScout.Settings\GitScout.Settings.csproj", "{C82C8316-4F21-4897-88A4-8BF6C18E3C20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitScout.Settings.Implementation", "GitScout.Settings.Implementation\GitScout.Settings.Implementation.csproj", "{CFF7AFAE-8C0E-47C3-8B78-BBE1C8B68822}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitScout.Settings.Tests", "GitScout.Settings.Tests\GitScout.Settings.Tests.csproj", "{162BCA41-7815-4FA9-83C3-E512E46FFC14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitScout.Utils", "GitScout.Utils\GitScout.Utils.csproj", "{8921FAD9-BD32-48E9-88DB-B5FE82520646}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitScout.ConsoleTest", "GitScout.ConsoleTest\GitScout.ConsoleTest.csproj", "{DD5EE203-86D8-4FC7-9594-39E222D72081}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +55,26 @@ Global
 		{2B2F2E4A-D492-4B1C-A7C5-81FCBA1199A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B2F2E4A-D492-4B1C-A7C5-81FCBA1199A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B2F2E4A-D492-4B1C-A7C5-81FCBA1199A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C82C8316-4F21-4897-88A4-8BF6C18E3C20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C82C8316-4F21-4897-88A4-8BF6C18E3C20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C82C8316-4F21-4897-88A4-8BF6C18E3C20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C82C8316-4F21-4897-88A4-8BF6C18E3C20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFF7AFAE-8C0E-47C3-8B78-BBE1C8B68822}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFF7AFAE-8C0E-47C3-8B78-BBE1C8B68822}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFF7AFAE-8C0E-47C3-8B78-BBE1C8B68822}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFF7AFAE-8C0E-47C3-8B78-BBE1C8B68822}.Release|Any CPU.Build.0 = Release|Any CPU
+		{162BCA41-7815-4FA9-83C3-E512E46FFC14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{162BCA41-7815-4FA9-83C3-E512E46FFC14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{162BCA41-7815-4FA9-83C3-E512E46FFC14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{162BCA41-7815-4FA9-83C3-E512E46FFC14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8921FAD9-BD32-48E9-88DB-B5FE82520646}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8921FAD9-BD32-48E9-88DB-B5FE82520646}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8921FAD9-BD32-48E9-88DB-B5FE82520646}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8921FAD9-BD32-48E9-88DB-B5FE82520646}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD5EE203-86D8-4FC7-9594-39E222D72081}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD5EE203-86D8-4FC7-9594-39E222D72081}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD5EE203-86D8-4FC7-9594-39E222D72081}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD5EE203-86D8-4FC7-9594-39E222D72081}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
