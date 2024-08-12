@@ -7,7 +7,7 @@
     </ResourceDictionary.MergedDictionaries>
 
     <!-- Define the dark theme colors -->
-    <Color x:Key="BackgroundColor">#FF101010</Color>
+    <Color x:Key="BackgroundColor">#101010</Color>
     <Color x:Key="ForegroundColor">#FFFFFF</Color>
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
     <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource ForegroundColor}" />

@@ -49,7 +49,7 @@
                                     <Run Text="none"/>
                                 </Italic>
                             </TextBlock>
-                            <Path VerticalAlignment="Center" Margin="8,2,0,0" Fill="Black" Data="M 0 0 L 3 3 L 6 0 Z"/>
+                            <Path VerticalAlignment="Center" Margin="8,2,0,0" Fill="{StaticResource ForegroundBrush}" Data="M 0 0 L 3 3 L 6 0 Z"/>
                         </StackPanel>
                     </MenuItem.Header>
                     <MenuItem.ItemsSource>
