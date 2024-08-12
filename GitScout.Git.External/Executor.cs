@@ -84,7 +84,7 @@ public class Executor
 #endif
 		if (!process.WaitForExit(_maxExecution))
 		{
-			throw new Exception($"{logCommand}Timed out");
+			throw new TimeoutException($"{logCommand}Timed out");
 		}
 
 #if EXEC_STREAM
@@ -94,12 +94,24 @@ public class Executor
 
 		if (throwOnErrorStream && errorData.Count > 0)
 		{
-			throw new Exception($"{logCommand}{string.Join(Environment.NewLine, errorData)}{Environment.NewLine}Exit Code: {process.ExitCode}");
+			throw new CommandExecutionException($"{logCommand}{string.Join(Environment.NewLine, errorData)}{Environment.NewLine}Exit Code: {process.ExitCode}");
 		}
 		if (process.ExitCode != 0)
 		{
-			throw new Exception($"{logCommand}{string.Join(Environment.NewLine, totalData)}{Environment.NewLine}Exit Code: {process.ExitCode}");
+			throw new CommandExecutionException($"{logCommand}{string.Join(Environment.NewLine, totalData)}{Environment.NewLine}Exit Code: {process.ExitCode}");
 		}
 		return totalData;
 	}
+}
+
+
+[Serializable]
+public class CommandExecutionException : Exception
+{
+	public CommandExecutionException() { }
+	public CommandExecutionException(string message) : base(message) { }
+	public CommandExecutionException(string message, Exception inner) : base(message, inner) { }
+	protected CommandExecutionException(
+	  System.Runtime.Serialization.SerializationInfo info,
+	  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }

@@ -43,7 +43,7 @@ public class ExecutorTests
 	[TestMethod]
 	public void Should_03b_handle_shell_execute()
 	{
-		Assert.ThrowsException<Exception>(() =>
+		Assert.ThrowsException<CommandExecutionException>(() =>
 		{
 			var result = Executor.Instance.Execute(null, AsmInit.ConsoleWriterPath, "test3");
 		});
