@@ -41,7 +41,7 @@ public class SettingsImplementation : ISettings
 		}
 		result ??= new T();
 		// _dictionary.Add(result, null);
-		_objects.Add(typeof(T), new WeakReference(result));
+		_objects[typeof(T)] = new WeakReference(result);
 		return result;
 	}
 

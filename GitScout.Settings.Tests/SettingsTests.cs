@@ -1,4 +1,5 @@
 using GitScout.Settings.Implementation;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GitScout.Settings.Tests;
 
@@ -37,22 +38,35 @@ public class SettingsTests
 	}
 
 
-	WeakReference Should_not_leak_by_instance_method()
+	WeakReference GetWeakRefFromSettings()
 	{
-		WeakReference wr;
-		{
-			var demoSettings = settings.Get<DemoSettings>();
-			demoSettings.SomeString1 = "xaxa";
-			wr = new WeakReference(demoSettings);
-			demoSettings = null;
-		}
+		var demoSettings = settings.Get<DemoSettings>();
+		demoSettings.SomeString1 = "xaxa";
+		var wr = new WeakReference(demoSettings);
+		demoSettings = null;
 		return wr;
 	}
 
 	[TestMethod]
 	public void Should_not_leak_by_instance()
 	{
-		var wr = Should_not_leak_by_instance_method();
+		var wr = GetWeakRefFromSettings();
+		GC.Collect();
+		GC.WaitForFullGCApproach();
+		Console.WriteLine(((DemoSettings?)wr.Target)?.SomeString1);
+		Assert.IsFalse(wr.IsAlive);
+	}
+
+	[TestMethod]
+	public void Should_get_after_gc()
+	{
+		var wr = GetWeakRefFromSettings();
+		GC.Collect();
+		GC.WaitForFullGCApproach();
+		Assert.IsFalse(wr.IsAlive);
+		wr = GetWeakRefFromSettings();
+		Assert.IsTrue(wr.IsAlive);
+		// Console.WriteLine(((DemoSettings?)wr.Target)?.SomeString1);
 		GC.Collect();
 		GC.WaitForFullGCApproach();
 		Console.WriteLine(((DemoSettings?)wr.Target)?.SomeString1);
