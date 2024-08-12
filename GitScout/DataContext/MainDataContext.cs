@@ -32,6 +32,8 @@ internal class MainDataContext : ViewModel
 	private readonly ISettings _settings;
 	private RepoInfo? currentRepo;
 	CommonOpenFileDialog _fbd;
+    WeakReferenceKeyDictionary<object, object> _viewModels = new WeakReferenceKeyDictionary<object, object>();
+
 
 	public MainDataContext(ISettings settings)
 	{
@@ -47,9 +49,20 @@ internal class MainDataContext : ViewModel
 		}
 
 		_settings = settings;
+
 	}
-	
-	public ReposList ReposList { get; set; }
+
+    public TViewModel OpenVm<TModel, TViewModel>(TModel model)
+    {
+        return _viewModels.TryGetValue;
+    }
+
+    public RepositoryScopedDataContext OpenVm(RepoInfo repo)
+    {
+        return OpenVm<RepoInfo, RepositoryScopedDataContext>(repo);
+    }
+
+    public ReposList ReposList { get; set; }
 	public RepoInfo? CurrentRepo
 	{
 		get => currentRepo;
