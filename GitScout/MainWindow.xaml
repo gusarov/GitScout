@@ -13,19 +13,19 @@
         <converters:NullToVisibilityConverter x:Key="ntv"/>
         <converters:CountToVisibilityConverter x:Key="cvc" />
         <datacontext:DataContextProxy x:Key="proxy" Data="{Binding}"/>
-        <DataTemplate DataType="{x:Type settings:RepoInfo}">
-            <TextBlock Text="{Binding Path}"/>
-        </DataTemplate>
     </Window.Resources>
     <DockPanel>
         <ToolBar DockPanel.Dock="Top">
-            <!--
-            <Label VerticalAlignment="Center" Padding="0" Margin="3 0 0 0" IsHitTestVisible="False">Repo:</Label>
-            -->
             <Menu Background="#00000000">
                 <MenuItem>
+                    <MenuItem.Resources>
+                        <DataTemplate DataType="{x:Type settings:RepoInfo}">
+                            <TextBlock Text="{Binding Path}" />
+                        </DataTemplate>
+                    </MenuItem.Resources>
                     <MenuItem.Header>
                         <StackPanel Orientation="Horizontal">
+                            <Image Width="16" Height="16" Source="Resources/RepoOpen.png" Margin="0 0 3 0"/>
                             <TextBlock Visibility="{Binding CurrentRepo, Converter={StaticResource ntv}, ConverterParameter=i}">
                                 <Run Text="Repo:"/>
                                 <Run Text="{Binding CurrentRepo.Short, Mode=OneWay}"/>
@@ -41,33 +41,20 @@
                     </MenuItem.Header>
                     <MenuItem.ItemsSource>
                         <CompositeCollection>
-                            <CollectionContainer>
-                                <CollectionContainer.Collection>
-                                    <Binding Source="{StaticResource proxy}" Path="Data.ReposList.Repos"/>
-                                </CollectionContainer.Collection>
-                            </CollectionContainer>
-                            <MenuItem Header="No known repos..." IsEnabled="False" Visibility="{Binding ReposList.Repos.Count, Converter={StaticResource cvc}}" />
+                            <CollectionContainer Collection="{Binding Data.ReposList.Repos, Source={StaticResource proxy}}" />
+                            <MenuItem Header="(No known repos)" IsEnabled="False" Visibility="{Binding ReposList.Repos.Count, Converter={StaticResource cvc}}" />
                             <Separator />
-                            <MenuItem Header="_Open Repo..." InputGestureText="Ctrl+O" Command="{Binding OpenRepoCommand}" />
+                            <MenuItem Header="_Open Repo..." InputGestureText="Ctrl+O" Command="{Binding OpenRepoCommand}" Icon="{StaticResource OpenFolderIcon}" />
                         </CompositeCollection>
                     </MenuItem.ItemsSource>
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="{x:Type MenuItem}">
+                            <Setter Property="Command" Value="{Binding Data.OpenExistingRepoCommand, Source={StaticResource proxy}}"/>
+                            <Setter Property="CommandParameter" Value="{Binding}"/>
+                            <Setter Property="InputGestureText" Value="{Binding CurrentBranch}"/>
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
                 </MenuItem>
-            </Menu>
-            <Label VerticalAlignment="Center" Padding="0" Margin="3 0 0 0" IsHitTestVisible="False">Branch:</Label>
-            <Menu Background="#00000000">
-                <MenuItem >
-                    <MenuItem.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock>Menu 2</TextBlock>
-                            <Path VerticalAlignment="Center" Margin="8,2,0,0" 
-                          Fill="Black" Data="M 0 0 L 3 3 L 6 0 Z"/>
-                        </StackPanel>
-                    </MenuItem.Header>
-                    <MenuItem Header="Menu 2-1"/>
-                    <MenuItem Header="Menu 2-2"/>
-                    <MenuItem Header="Menu 2-3"/>
-                </MenuItem>
-                <MenuItem Header="Menu 3"/>
             </Menu>
         </ToolBar>
         <Grid>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GitScout.Git;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -10,11 +11,8 @@ namespace GitScout.Settings;
 
 internal class ReposList
 {
-	public ObservableCollection<RepoInfo> Repos { get; set; } = new ObservableCollection<RepoInfo>
-	{
-		// new RepoInfo { Path = "asd1/asd1/asd1", },
-		// new RepoInfo { Path = "asd2/asd2/asd2", },
-	};
+	public ObservableCollection<RepoInfo> Repos { get; set; } = new ObservableCollection<RepoInfo>();
+	public string? LastRepo { get; set; }
 }
 
 internal class RepoInfo
@@ -22,4 +20,49 @@ internal class RepoInfo
 	public string Path { get; set; }
 
 	public string Short => System.IO.Path.GetFileName(Path);
+
+	Lazy<IGitIntegration> _git;
+	public IGitIntegration Git => _git.Value;
+
+	public RepoInfo()
+	{
+		_git = new Lazy<IGitIntegration>(() =>
+		{
+			try
+			{
+				return UiServiceLocator.Instance.GitIntegrationFactory.Open(Path);
+			}
+			catch (Exception ex)
+			{
+				return new ErrorGitIntegration();
+			}
+		});
+	}
+
+	public string CurrentBranch => Git.GetActiveBranchName();
+}
+
+class ErrorGitIntegration : IGitIntegration
+{
+	string IGitIntegration.GetActiveBranchName()
+	{
+		return "Bad Repo";
+	}
+
+	IEnumerable<string> IGitIntegration.GetBranchNames()
+	{
+		return ["Bad Repo"];
+	}
+}
+
+internal class UiServiceLocator
+{
+	public static UiServiceLocator Instance = new UiServiceLocator();
+
+    private UiServiceLocator()
+    {
+			
+    }
+
+    public IGitIntegrationFactory GitIntegrationFactory;
 }

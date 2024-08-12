@@ -31,10 +31,13 @@ public class SettingsImplementation : ISettings
 		if (File.Exists(fileName))
 		{
 			var data = File.ReadAllText(fileName);
-			result = JsonSerializer.Deserialize<T>(data, new JsonSerializerOptions
+			if (!string.IsNullOrWhiteSpace(data))
 			{
-				AllowTrailingCommas = true,
-			});
+				result = JsonSerializer.Deserialize<T>(data, new JsonSerializerOptions
+				{
+					AllowTrailingCommas = true,
+				});
+			}
 		}
 		result ??= new T();
 		// _dictionary.Add(result, null);

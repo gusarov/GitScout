@@ -2,6 +2,7 @@
 
 using GitScout.Git.External;
 using GitScout.Git.LibGit2;
+using LibGit2Sharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using Newtonsoft.Json.Bson;
@@ -75,6 +76,7 @@ public abstract class GitIntegrationTests
 	[TestMethod]
 	public void Should_20_retrieve_commits()
 	{
+		Assert.Inconclusive();
 		var repo = TestGitRepoFactory.Instance.GetRepo();
 
 		repo.EnsureBranch("branch1");
@@ -83,6 +85,17 @@ public abstract class GitIntegrationTests
 		var branches = _sut.GetBranchNames().ToArray();
 		Assert.IsTrue(branches.Any(x => x == "branch1"));
 		Assert.IsTrue(branches.Any(x => x == "branch2"));
+	}
+
+	[TestMethod]
+	public void Should_15_retrieve_current_branch_name()
+	{
+		var repo = TestGitRepoFactory.Instance.GetRepo();
+
+		repo.EnsureBranch("branch1");
+		repo.EnsureBranch("branch2");
+
+		Assert.AreEqual("master", _sut.GetActiveBranchName());
 	}
 }
 

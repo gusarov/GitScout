@@ -1,4 +1,6 @@
 ﻿using GitScout.DataContext;
+using GitScout.Git;
+using GitScout.Git.LibGit2;
 using GitScout.Settings;
 using GitScout.Settings.Implementation;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,10 +27,12 @@ public partial class MainWindow : Window
 		
 		var sc = new ServiceCollection();
 		sc.AddSingleton<ISettings, SettingsImplementation>();
+		sc.AddSingleton<IGitIntegrationFactory, LibGit2GitIntegrationFactory>();
 		sc.AddSingleton<MainDataContext>();
 
 		var sp = sc.BuildServiceProvider();
 
+		UiServiceLocator.Instance.GitIntegrationFactory = sp.GetRequiredService<IGitIntegrationFactory>();
 		DataContext = sp.GetRequiredService<MainDataContext>();
 	}
 

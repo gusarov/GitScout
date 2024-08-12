@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +35,12 @@ internal class MainDataContext : ViewModel
 	public MainDataContext(ISettings settings)
 	{
 		ReposList = settings.Get<ReposList>();
-		if (ReposList.Repos.Count > 0)
+		var lastRepoInfo = ReposList.Repos.FirstOrDefault(x => string.Equals(x.Path, ReposList.LastRepo, StringComparison.OrdinalIgnoreCase));
+		if (lastRepoInfo != null)
+		{
+			CurrentRepo = lastRepoInfo;
+		}
+		else if (ReposList.Repos.Count > 0)
 		{
 			CurrentRepo = ReposList.Repos[0];
 		}
@@ -57,12 +63,13 @@ internal class MainDataContext : ViewModel
 	{
 		get
 		{
-			return new DelegatedCommand(delegate
+			return new DelegatedCommand(_ =>
 			{
 				_fbd ??= new CommonOpenFileDialog
 				{
 					IsFolderPicker = true,
 				};
+				retry:
 				if (_fbd.ShowDialog() == CommonFileDialogResult.Ok && Directory.Exists(_fbd.FileName))
 				{
 					var newPath = _fbd.FileName;
@@ -70,16 +77,40 @@ internal class MainDataContext : ViewModel
 					if (existing != null)
 					{
 						CurrentRepo = existing;
+						ReposList.LastRepo = newPath;
+						_settings.Save(ReposList);
 					}
 					else
 					{
-						ReposList.Repos.Add(CurrentRepo = new RepoInfo
+						var repoInfo = new RepoInfo
 						{
 							Path = newPath,
-						});
-						_settings.Save(ReposList);
+						};
+						if (repoInfo.Git is ErrorGitIntegration)
+						{
+							MessageBox.Show("This is not a git repo.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+							goto retry;
+						}
+						else
+						{
+							ReposList.Repos.Add(CurrentRepo = repoInfo);
+							ReposList.LastRepo = newPath;
+							_settings.Save(ReposList);
+						}
 					}
 				}
+			});
+		}
+	}
+	public ICommand OpenExistingRepoCommand
+	{
+		get
+		{
+			return new DelegatedCommand(repoInfo =>
+			{
+				CurrentRepo = (RepoInfo?)repoInfo;
+				ReposList.LastRepo = CurrentRepo?.Path;
+				_settings.Save(ReposList);
 			});
 		}
 	}

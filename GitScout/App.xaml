@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:GitScout"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Image x:Key="OpenRepoIcon" Source="Resources/RepoOpen.png"/>
+        <Image x:Key="OpenFolderIcon" Source="Resources/FolderOpen.png"/>
     </Application.Resources>
 </Application>

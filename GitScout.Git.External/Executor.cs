@@ -97,7 +97,7 @@ public class Executor
 		}
 		if (process.ExitCode != 0)
 		{
-			throw new Exception($"{logCommand}Exit Code: {process.ExitCode}");
+			throw new Exception($"{logCommand}{string.Join(Environment.NewLine, totalData)}{Environment.NewLine}Exit Code: {process.ExitCode}");
 		}
 		return totalData;
 	}

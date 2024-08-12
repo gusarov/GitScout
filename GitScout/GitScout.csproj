@@ -9,14 +9,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\FolderOpen.png" />
+    <None Remove="Resources\RepoOpen.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="WindowsAPICodePack" Version="8.0.4" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GitScout.Git.LibGit2\GitScout.Git.LibGit2.csproj" />
+    <ProjectReference Include="..\GitScout.Git\GitScout.Git.csproj" />
     <ProjectReference Include="..\GitScout.Settings.Implementation\GitScout.Settings.Implementation.csproj" />
     <ProjectReference Include="..\GitScout.Settings\GitScout.Settings.csproj" />
     <ProjectReference Include="..\GitScout.Utils\GitScout.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\*" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
