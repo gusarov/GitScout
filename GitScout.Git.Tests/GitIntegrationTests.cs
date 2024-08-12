@@ -74,6 +74,17 @@ public abstract class GitIntegrationTests
 	}
 
 	[TestMethod]
+	public void Should_20_retrieve_branch_as_folder_tree()
+	{
+		var repo = TestGitRepoFactory.Instance.GetRepo();
+
+		repo.EnsureBranch("folder/subfolder/branch3");
+
+		var branches = _sut.GetBranchNames().ToArray();
+		Assert.IsTrue(branches.Any(x => x == "folder/subfolder/branch3"));
+	}
+
+	[TestMethod]
 	public void Should_20_retrieve_commits()
 	{
 		Assert.Inconclusive();
