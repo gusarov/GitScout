@@ -66,19 +66,25 @@
 			<TreeView Background="Gray">
 				<TreeView.Resources>
 					<HierarchicalDataTemplate DataType="{x:Type datacontext:BranchFolderViewModel}" ItemsSource="{Binding Children}">
-						<TextBlock>
-							<Run>Fodler:</Run>
-							<Run Text="{Binding BranchName, Mode=OneWay}"/>
-						</TextBlock>
+						<StackPanel Orientation="Horizontal">
+							<Image Source="Resources/BranchFolder.png" Width="16" Height="16" Margin="0 0 3 0"/>
+							<TextBlock Text="{Binding BranchName, Mode=OneWay}" />
+						</StackPanel>
 					</HierarchicalDataTemplate>
 					<DataTemplate DataType="{x:Type datacontext:BranchLeafViewModel}">
-						<TextBlock>
-							<Run>Branch:</Run>
-							<Run Text="{Binding BranchName, Mode=OneWay}"/>
-						</TextBlock>
+						<StackPanel Orientation="Horizontal">
+							<Image Source="Resources/BranchLocal.png" Width="16" Height="16" Margin="0 0 3 0"/>
+							<TextBlock Text="{Binding BranchName, Mode=OneWay}" />
+						</StackPanel>
 					</DataTemplate>
 				</TreeView.Resources>
-				<TreeViewItem Header="Branches" ItemsSource="{Binding CurrentRepoVm.Branches}">
+				<TreeViewItem ItemsSource="{Binding CurrentRepoVm.Branches}">
+					<TreeViewItem.Header>
+						<StackPanel Orientation="Horizontal">
+							<Image Source="Resources/LocalBranchRoot.png" Width="16" Height="16" Margin="0 0 3 0"/>
+							<TextBlock Text="Branches" />
+						</StackPanel>
+					</TreeViewItem.Header>
 				</TreeViewItem>
 				<TreeViewItem Header="Remotes">
 					<TreeViewItem Header="Item1" />
