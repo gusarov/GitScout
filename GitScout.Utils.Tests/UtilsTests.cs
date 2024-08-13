@@ -23,7 +23,7 @@ public class WeakCacheTests
     [TestMethod]
     public void Should_keep_by_key()
     {
-        var dic = new WeakReferenceKeyDictionary<DemoKey, string>();
+        var dic = new WeakKeyDictionary<DemoKey, string>();
 
         var key1 = new DemoKey();
         var key2 = new DemoKey();
@@ -35,7 +35,7 @@ public class WeakCacheTests
         Assert.AreEqual("val2", dic[key2]);
     }
 
-    WeakReference RegisterKey(WeakReferenceKeyDictionary<DemoKey, string> sut)
+    WeakReference RegisterKey(WeakKeyDictionary<DemoKey, string> sut)
     {
         var key = new DemoKey();
         var wr = new WeakReference(key);
@@ -46,7 +46,7 @@ public class WeakCacheTests
     [TestMethod]
     public void Should_allow_key_to_be_collected()
     {
-        var dic = new WeakReferenceKeyDictionary<DemoKey, string>();
+        var dic = new WeakKeyDictionary<DemoKey, string>();
 
         var wr = RegisterKey(dic);
         Assert.IsTrue(wr.IsAlive);

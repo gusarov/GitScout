@@ -27,13 +27,51 @@ internal class ViewModel : INotifyPropertyChanged
 	}
 }
 
+class ViewModels
+{
+	public static TViewModel OpenVm<TModel, TViewModel>(TModel model)
+		where TModel : class
+		where TViewModel : class, new()
+	{
+		return ViewModels<TModel, TViewModel>.Instance.GetViewModel(model, model => new TViewModel());
+	}
+
+	public static TViewModel OpenVm<TModel, TViewModel>(TModel model, Func<TModel, TViewModel> factory)
+		where TModel : class
+		where TViewModel : class
+	{
+		return ViewModels<TModel, TViewModel>.Instance.GetViewModel(model, factory);
+	}
+
+	public static RepositoryScopedDataContext OpenVm(RepoInfo repo)
+	{
+		return OpenVm(repo, repo => new RepositoryScopedDataContext(repo));
+	}
+}
+
+class ViewModels<TModel, TViewModel>
+	where TModel : class
+	where TViewModel : class
+{
+	public static ViewModels<TModel, TViewModel> Instance = new ViewModels<TModel, TViewModel>();
+
+	private ViewModels()
+	{
+	}
+
+	WeakKeyDictionary<TModel, TViewModel> _viewModels = new WeakKeyDictionary<TModel, TViewModel>();
+
+	public TViewModel GetViewModel(TModel model, Func<TModel, TViewModel> factory)
+	{
+		return _viewModels.GetOrAdd(model, factory)!;
+	}
+}
+
 internal class MainDataContext : ViewModel
 {
 	private readonly ISettings _settings;
 	private RepoInfo? currentRepo;
-	CommonOpenFileDialog _fbd;
-    WeakReferenceKeyDictionary<object, object> _viewModels = new WeakReferenceKeyDictionary<object, object>();
-
+	CommonOpenFileDialog? _fbd;
 
 	public MainDataContext(ISettings settings)
 	{
@@ -52,17 +90,7 @@ internal class MainDataContext : ViewModel
 
 	}
 
-    public TViewModel OpenVm<TModel, TViewModel>(TModel model)
-    {
-        return _viewModels.TryGetValue;
-    }
-
-    public RepositoryScopedDataContext OpenVm(RepoInfo repo)
-    {
-        return OpenVm<RepoInfo, RepositoryScopedDataContext>(repo);
-    }
-
-    public ReposList ReposList { get; set; }
+	public ReposList ReposList { get; set; }
 	public RepoInfo? CurrentRepo
 	{
 		get => currentRepo;
@@ -83,7 +111,7 @@ internal class MainDataContext : ViewModel
 				{
 					IsFolderPicker = true,
 				};
-				retry:
+			retry:
 				if (_fbd.ShowDialog(UiServiceLocator.Instance.MainWindow) == CommonFileDialogResult.Ok && Directory.Exists(_fbd.FileName))
 				{
 					var newPath = _fbd.FileName;
