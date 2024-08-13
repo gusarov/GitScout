@@ -124,10 +124,7 @@ internal class MainDataContext : ViewModel
 					}
 					else
 					{
-						var repoInfo = new RepoInfo
-						{
-							Path = newPath,
-						};
+						var repoInfo = new RepoInfo(newPath);
 						if (repoInfo.Git is ErrorGitIntegration ex)
 						{
 							MessageBox.Show(UiServiceLocator.Instance.MainWindow

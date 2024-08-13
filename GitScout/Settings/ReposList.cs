@@ -24,8 +24,9 @@ internal class RepoInfo
 	Lazy<IGitIntegration> _git;
 	public IGitIntegration Git => _git.Value;
 
-	public RepoInfo()
+	public RepoInfo(string path)
 	{
+		Path = path ?? throw new ArgumentNullException(nameof(path));
 		_git = new Lazy<IGitIntegration>(() =>
 		{
 			try

@@ -15,7 +15,7 @@ internal class DelegatedCommand : ICommand
 		_action = action ?? throw new ArgumentNullException(nameof(action));
 	}
 
-    public event EventHandler? CanExecuteChanged
+	public event EventHandler? CanExecuteChanged
 	{
 		add { }
 		remove { }

@@ -10,66 +10,66 @@
         xmlns:converters="clr-namespace:GitScout.Converters"
         mc:Ignorable="d"
         Title="GitScout v1.0" Height="450" Width="800">
-    <Window.InputBindings>
-        <KeyBinding Modifiers="Ctrl" Key="O" Command="{Binding OpenRepoCommand}" />
-    </Window.InputBindings>
-    <Window.Resources>
-        <!--
+	<Window.InputBindings>
+		<KeyBinding Modifiers="Ctrl" Key="O" Command="{Binding OpenRepoCommand}" />
+	</Window.InputBindings>
+	<Window.Resources>
+		<!--
         <Style TargetType="MenuItem">
             <Setter Property="Height" Value="36"/>
         </Style>
         -->
-        <converters:NullToVisibilityConverter x:Key="ntv"/>
-        <converters:CountToVisibilityConverter x:Key="cvc" />
-        <datacontext:DataContextProxy x:Key="proxy" Data="{Binding}"/>
-    </Window.Resources>
-    <DockPanel>
-        <ToolBar DockPanel.Dock="Top" Padding="0" Margin="0">
-            <Menu Background="#00000000">
-                <MenuItem Height="36">
-                    <!--
+		<converters:NullToVisibilityConverter x:Key="ntv"/>
+		<converters:CountToVisibilityConverter x:Key="cvc" />
+		<datacontext:DataContextProxy x:Key="proxy" Data="{Binding}"/>
+	</Window.Resources>
+	<DockPanel>
+		<ToolBar DockPanel.Dock="Top" Padding="0" Margin="0">
+			<Menu Background="#00000000">
+				<MenuItem Height="36">
+					<!--
                      Height="36"
                     -->
-                    <MenuItem.Resources>
-                        <DataTemplate DataType="{x:Type settings:RepoInfo}">
-                            <TextBlock Text="{Binding Path}" />
-                        </DataTemplate>
-                    </MenuItem.Resources>
-                    <MenuItem.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <Image Width="16" Height="16" Source="Resources/RepoOpen.png" Margin="0 0 3 0"/>
-                            <TextBlock Visibility="{Binding CurrentRepo, Converter={StaticResource ntv}, ConverterParameter=i}">
+					<MenuItem.Resources>
+						<DataTemplate DataType="{x:Type settings:RepoInfo}">
+							<TextBlock Text="{Binding Path}" />
+						</DataTemplate>
+					</MenuItem.Resources>
+					<MenuItem.Header>
+						<StackPanel Orientation="Horizontal">
+							<Image Width="16" Height="16" Source="Resources/RepoOpen.png" Margin="0 0 3 0"/>
+							<TextBlock Visibility="{Binding CurrentRepo, Converter={StaticResource ntv}, ConverterParameter=i}">
                                 <Run Text="Repo:"/>
                                 <Run Text="{Binding CurrentRepo.Short, Mode=OneWay}"/>
-                            </TextBlock>
-                            <TextBlock Visibility="{Binding CurrentRepo, Converter={StaticResource ntv}}">
+							</TextBlock>
+							<TextBlock Visibility="{Binding CurrentRepo, Converter={StaticResource ntv}}">
                                 <Run Text="Repo:"/>
                                 <Italic>
                                     <Run Text="none"/>
                                 </Italic>
-                            </TextBlock>
-                            <Path VerticalAlignment="Center" Margin="8,2,0,0" Fill="{StaticResource ForegroundBrush}" Data="M 0 0 L 3 3 L 6 0 Z"/>
-                        </StackPanel>
-                    </MenuItem.Header>
-                    <MenuItem.ItemsSource>
-                        <CompositeCollection>
-                            <CollectionContainer Collection="{Binding Data.ReposList.Repos, Source={StaticResource proxy}}" />
-                            <MenuItem Header="(No known repos)" IsEnabled="False" Visibility="{Binding ReposList.Repos.Count, Converter={StaticResource cvc}}" />
-                            <Separator />
-                            <MenuItem Header="_Open Repo..." InputGestureText="Ctrl+O" Command="{Binding OpenRepoCommand}" Icon="{StaticResource OpenFolderIcon}" />
-                        </CompositeCollection>
-                    </MenuItem.ItemsSource>
-                    <MenuItem.ItemContainerStyle>
-                        <Style TargetType="{x:Type MenuItem}">
-                            <Setter Property="Command" Value="{Binding Data.OpenExistingRepoCommand, Source={StaticResource proxy}}"/>
-                            <Setter Property="CommandParameter" Value="{Binding}"/>
-                            <Setter Property="InputGestureText" Value="{Binding CurrentBranch}"/>
-                        </Style>
-                    </MenuItem.ItemContainerStyle>
-                </MenuItem>
-            </Menu>
-        </ToolBar>
-        <Grid>
-        </Grid>
-    </DockPanel>
+							</TextBlock>
+							<Path VerticalAlignment="Center" Margin="8,2,0,0" Fill="{StaticResource ForegroundBrush}" Data="M 0 0 L 3 3 L 6 0 Z"/>
+						</StackPanel>
+					</MenuItem.Header>
+					<MenuItem.ItemsSource>
+						<CompositeCollection>
+							<CollectionContainer Collection="{Binding Data.ReposList.Repos, Source={StaticResource proxy}}" />
+							<MenuItem Header="(No known repos)" IsEnabled="False" Visibility="{Binding ReposList.Repos.Count, Converter={StaticResource cvc}}" />
+							<Separator />
+							<MenuItem Header="_Open Repo..." InputGestureText="Ctrl+O" Command="{Binding OpenRepoCommand}" Icon="{StaticResource OpenFolderIcon}" />
+						</CompositeCollection>
+					</MenuItem.ItemsSource>
+					<MenuItem.ItemContainerStyle>
+						<Style TargetType="{x:Type MenuItem}">
+							<Setter Property="Command" Value="{Binding Data.OpenExistingRepoCommand, Source={StaticResource proxy}}"/>
+							<Setter Property="CommandParameter" Value="{Binding}"/>
+							<Setter Property="InputGestureText" Value="{Binding CurrentBranch}"/>
+						</Style>
+					</MenuItem.ItemContainerStyle>
+				</MenuItem>
+			</Menu>
+		</ToolBar>
+		<Grid>
+		</Grid>
+	</DockPanel>
 </Window>
