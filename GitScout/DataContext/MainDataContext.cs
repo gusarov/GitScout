@@ -98,7 +98,15 @@ internal class MainDataContext : ViewModel
 		{
 			currentRepo = value;
 			OnPropertyChanged();
+			OnPropertyChanged(nameof(CurrentRepoVm));
 		}
+	}
+
+	public RepositoryScopedDataContext? CurrentRepoVm
+	{
+		get => CurrentRepo != null
+			? ViewModels.OpenVm(CurrentRepo)
+			: null;
 	}
 
 	public ICommand OpenRepoCommand

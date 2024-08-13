@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace GitScout.Settings;
 
@@ -74,4 +75,5 @@ internal class UiServiceLocator
     public IGitIntegrationFactory GitIntegrationFactory;
 
 	public MainWindow MainWindow;
+	public Dispatcher Dispatcher;
 }

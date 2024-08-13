@@ -69,6 +69,7 @@ public partial class MainWindow : Window
 
 		UiServiceLocator.Instance.GitIntegrationFactory = sp.GetRequiredService<IGitIntegrationFactory>();
 		UiServiceLocator.Instance.MainWindow = this;
+		UiServiceLocator.Instance.Dispatcher = Dispatcher;
 		DataContext = sp.GetRequiredService<MainDataContext>();
 	}
 

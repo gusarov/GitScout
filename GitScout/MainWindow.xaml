@@ -9,6 +9,7 @@
         xmlns:datacontext="clr-namespace:GitScout.DataContext"
         xmlns:converters="clr-namespace:GitScout.Converters"
         mc:Ignorable="d"
+		d:DataContext="{d:DesignInstance datacontext:MainDataContext, IsDesignTimeCreatable=True}"
         Title="GitScout v1.0" Height="450" Width="800">
 	<Window.InputBindings>
 		<KeyBinding Modifiers="Ctrl" Key="O" Command="{Binding OpenRepoCommand}" />
@@ -61,6 +62,33 @@
 				</MenuItem>
 			</Menu>
 		</ToolBar>
+		<Grid DockPanel.Dock="Left">
+			<TreeView Background="Gray">
+				<TreeView.Resources>
+					<HierarchicalDataTemplate DataType="{x:Type datacontext:BranchFolderViewModel}" ItemsSource="{Binding Children}">
+						<TextBlock>
+							<Run>Fodler:</Run>
+							<Run Text="{Binding BranchName, Mode=OneWay}"/>
+						</TextBlock>
+					</HierarchicalDataTemplate>
+					<DataTemplate DataType="{x:Type datacontext:BranchLeafViewModel}">
+						<TextBlock>
+							<Run>Branch:</Run>
+							<Run Text="{Binding BranchName, Mode=OneWay}"/>
+						</TextBlock>
+					</DataTemplate>
+				</TreeView.Resources>
+				<TreeViewItem Header="Branches" ItemsSource="{Binding CurrentRepoVm.Branches}">
+				</TreeViewItem>
+				<TreeViewItem Header="Remotes">
+					<TreeViewItem Header="Item1" />
+					<TreeViewItem Header="branchFolder">
+						<TreeViewItem Header="Item1" />
+						<TreeViewItem Header="Item1" />
+					</TreeViewItem>
+				</TreeViewItem>
+			</TreeView>
+		</Grid>
 		<Grid>
 		</Grid>
 	</DockPanel>
