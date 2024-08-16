@@ -46,6 +46,11 @@ public class ExternalGitIntegration : IGitIntegration
 		var list = Executor.Instance.Execute(_path, "git", $"rev-parse --abbrev-ref HEAD", throwOnErrorStream: false);
 		return list.FirstOrDefault() ?? throw new Exception("Unknown response of branch name");
 	}
+
+	public IEnumerable<ICommitInfo> GetCommits()
+	{
+		throw new NotImplementedException();
+	}
 }
 
 public class ExternalGitIntegrationFactory : IGitIntegrationFactory

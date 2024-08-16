@@ -1,4 +1,104 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace GitScout.Utils.Tests;
+
+[TestClass]
+public class ObjectExtensionsTests
+{
+	public class MyModel
+	{
+
+	}
+
+	public class MyModelExtensionFactorable
+	{
+		public MyModel Model { get; }
+
+		public MyModelExtensionFactorable(MyModel model)
+		{
+			Model = model;
+		}
+	}
+	public class MyModelExtensionFactorableNewable
+	{
+		public MyModel Model { get; }
+
+		public MyModelExtensionFactorableNewable()
+		{
+
+		}
+
+		public MyModelExtensionFactorableNewable(MyModel model)
+		{
+			Model = model;
+		}
+	}
+
+	public class MyModelExtensionNewable
+	{
+
+	}
+
+	[TestMethod]
+	public void Should_extend_object_with_newable()
+	{
+		var commit1 = new MyModel();
+		var commit2 = new MyModel();
+
+		var adaptedCommit1 = ObjectExtensions<MyModelExtensionNewable>.Get(commit1);
+		var adaptedCommit2 = ObjectExtensions<MyModelExtensionNewable>.Get(commit2);
+
+		Assert.AreSame(adaptedCommit1, ObjectExtensions<MyModelExtensionNewable>.Get(commit1));
+		Assert.AreSame(adaptedCommit2, ObjectExtensions<MyModelExtensionNewable>.Get(commit2));
+	}
+
+	[TestMethod]
+	public void Should_extend_object_with_factorable()
+	{
+		var commit1 = new MyModel();
+		var commit2 = new MyModel();
+
+		var adaptedCommit1 = ObjectExtensions.Get(commit1, x => new MyModelExtensionFactorable(x));
+		var adaptedCommit2 = ObjectExtensions.Get(commit2, x => new MyModelExtensionFactorable(x));
+
+		Assert.AreSame(adaptedCommit1, ObjectExtensions.Get(commit1, x => new MyModelExtensionFactorable(x)));
+		Assert.AreSame(adaptedCommit2, ObjectExtensions.Get(commit2, x => new MyModelExtensionFactorable(x)));
+	}
+
+	[TestMethod]
+	public void Should_extend_object_with_same_newable_as_factorable()
+	{
+		var commit1 = new MyModel();
+		var adaptedCommit1 = ObjectExtensions.Get(commit1, x => new MyModelExtensionFactorableNewable(x)); // factorable api
+		Assert.AreSame(adaptedCommit1, ObjectExtensions<MyModelExtensionFactorableNewable>.Get(commit1)); // newable api
+	}
+
+	(WeakReference, WeakReference) RegisterExtension()
+	{
+		var item = new MyModel();
+		var ext = ObjectExtensions<MyModelExtensionNewable>.Get(item);
+		return (new WeakReference(item), new WeakReference(ext));
+	}
+
+	[TestMethod]
+	[Timeout(3000)]
+	public void Should_not_leak()
+	{
+		var (model, extension) = RegisterExtension();
+		Assert.IsTrue(model.IsAlive);
+		Assert.IsTrue(extension.IsAlive);
+		GC.Collect();
+		Assert.IsFalse(model.IsAlive);
+
+		// Usually extension is still alive till the cache maintenance
+		while (extension.IsAlive)
+		{
+			Thread.Sleep(100);
+			GC.Collect();
+		}
+		Assert.IsFalse(extension.IsAlive);
+	}
+}
 
 [TestClass]
 public class HumanReadableUtilsTests
@@ -23,7 +123,7 @@ public class WeakCacheTests
 	[TestMethod]
 	public void Should_keep_by_key()
 	{
-		var dic = new WeakKeyDictionary<DemoKey, string>();
+		var dic = new WeakKeyDictionary2<DemoKey, string>();
 
 		var key1 = new DemoKey();
 		var key2 = new DemoKey();
@@ -35,18 +135,18 @@ public class WeakCacheTests
 		Assert.AreEqual("val2", dic[key2]);
 	}
 
-	WeakReference RegisterKey(WeakKeyDictionary<DemoKey, string> sut)
+	WeakReference RegisterKey(WeakKeyDictionary2<DemoKey, string> sut)
 	{
 		var key = new DemoKey();
 		var wr = new WeakReference(key);
-		sut.Add(key, "to be deleted");
+		sut[key] = "to be deleted";
 		return wr;
 	}
 
 	[TestMethod]
 	public void Should_allow_key_to_be_collected()
 	{
-		var dic = new WeakKeyDictionary<DemoKey, string>();
+		var dic = new WeakKeyDictionary2<DemoKey, string>();
 
 		var wr = RegisterKey(dic);
 		Assert.IsTrue(wr.IsAlive);
@@ -54,8 +154,12 @@ public class WeakCacheTests
 		GC.WaitForFullGCApproach();
 		Assert.IsFalse(wr.IsAlive);
 
-		Assert.AreEqual(1, dic.Count);
-		Thread.Sleep(TimeSpan.FromSeconds(3));
+		while(dic.Count != 0)
+		{
+			Thread.Sleep(100);
+		}
+		// Assert.AreEqual(1, dic.Count);
+		// Thread.Sleep(TimeSpan.FromSeconds(3));
 		Assert.AreEqual(0, dic.Count);
 	}
 

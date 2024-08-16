@@ -1,6 +1,5 @@
 ﻿using GitScout.DataContext;
 using GitScout.Git;
-using GitScout.Git.External;
 using GitScout.Git.LibGit2;
 using GitScout.Settings;
 using GitScout.Settings.Implementation;

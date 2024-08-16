@@ -1,4 +1,5 @@
 ﻿using GitScout.Settings;
+using GitScout.ViewModels;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -21,12 +22,18 @@ namespace GitScout.DataContext
 		public RepositoryScopedDataContext(RepoInfo repoInfo)
 		{
 			_repoInfo = repoInfo;
-			_ = SyncronizeAsync();
+			_ = SyncronizeBranchesAsync();
 		}
 
 		public ObservableCollection<BranchViewModel> Branches { get; } = new ObservableCollection<BranchViewModel>();
+		public ObservableCollection<CommitNode> Commits { get; } = new ObservableCollection<CommitNode>(new[]
+		{
+			new CommitNode() { CommitId= "e124f76afd86bd87f8818f039697432c062e705f", Date = DateTime.UtcNow.AddHours(-0), Author = "dmitry.guarov@gmail.com", Message = "Test1", Branches = ["master"] },
+			new CommitNode() { CommitId= "e124f76afd86bd87f8818f039697432c062e705e", Date = DateTime.UtcNow.AddHours(-1), Author = "dmitry.guarov@gmail.com", Message = "Test2", Branches = ["test1"] },
+			new CommitNode() { CommitId= "e124f76afd86bd87f8818f039697432c062e705d", Date = DateTime.UtcNow.AddHours(-2), Author = "dmitry.guarov@gmail.com", Message = "Test3", Branches = ["master", "test1"] },
+		});
 
-		async Task SyncronizeAsync()
+		async Task SyncronizeBranchesAsync()
 		{
 			await Task.Yield();
 			var branchPaths = _repoInfo.Git.GetBranchNames();

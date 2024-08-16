@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GitScout.Git.External\GitScout.Git.External.csproj" />
     <ProjectReference Include="..\GitScout.Git.LibGit2\GitScout.Git.LibGit2.csproj" />
     <ProjectReference Include="..\GitScout.Git\GitScout.Git.csproj" />
     <ProjectReference Include="..\GitScout.Settings.Implementation\GitScout.Settings.Implementation.csproj" />

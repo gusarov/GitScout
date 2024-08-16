@@ -4,39 +4,33 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Timers;
 
 internal class Maintainer
 {
 	public static Maintainer Instance = new Maintainer();
 
-	private WeakHashSet<IMaintanable> _maintanables = new WeakHashSet<IMaintanable>();
-	private Timer _timer;
+	private WeakHashSet<IMaintainable> _maintanables = new WeakHashSet<IMaintainable>();
+	private System.Threading.Timer _timer;
+
+	private SortedDictionary<IMaintainable, object?> _maintanablesScheduled = new SortedDictionary<IMaintainable, object?>();
+	private System.Threading.Timer _timerSchedule;
+	private bool _timerScheduleSet;
 
 	private Maintainer()
 	{
 		// now when Instance is created, we should re-register this _maintanables that was missed inside WeakHashSet initializer
 		Add(_maintanables);
-		_timer = new Timer(
-#if DEBUG
-			TimeSpan.FromSeconds(2)
-#else
-            TimeSpan.FromMinutes(1)
-#endif
-			);
-		_timer.Elapsed += TimerElapsed;
-		_timer.Enabled = true;
+		_timer = new System.Threading.Timer(TimerElapsed, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+		_timerSchedule = new System.Threading.Timer(TimerElapsedSchedule);
 	}
 
-	private void TimerElapsed(object? sender, ElapsedEventArgs e)
+	private void TimerElapsed(object? state)
 	{
-		_timer.Enabled = false;
-		try
+		lock (_maintanables)
 		{
 			foreach (var kvp in _maintanables)
 			{
@@ -50,22 +44,59 @@ internal class Maintainer
 				}
 			}
 		}
-		finally
+	}
+
+	private void TimerElapsedSchedule(object? state)
+	{
+		lock (_timerSchedule)
 		{
-			_timer.Enabled = true;
+			_timerScheduleSet = false;
+		}
+		IMaintainable[] array;
+		lock (_maintanablesScheduled)
+		{
+			array = _maintanablesScheduled.Keys.ToArray();
+			_maintanablesScheduled.Clear();
+		}
+		foreach (var maintainable in array)
+		{
+			try
+			{
+				maintainable.Maintenance();
+			}
+			catch (Exception ex)
+			{
+				Trace.TraceError(ex.ToString());
+			}
 		}
 	}
 
-	public void Add(IMaintanable maintanable)
+	public void Add(IMaintainable maintanable)
 	{
 		lock (_maintanables)
 		{
 			_maintanables.Add(maintanable);
 		}
 	}
+
+	internal void Schedule(IMaintainable maintanable)
+	{
+		lock (_timerSchedule)
+		{
+			if (!_timerScheduleSet)
+			{
+				_timerScheduleSet = true;
+				_timerSchedule.Change(100, Timeout.Infinite);
+			}
+		}
+		lock (_maintanablesScheduled)
+		{
+			_maintanablesScheduled.Add(maintanable, null);
+		}
+	}
 }
 
-public interface IMaintanable
+public interface IMaintainable
 {
 	public void Maintenance();
 }
@@ -82,7 +113,34 @@ public class WeakHashSet<TKey> : WeakKeyDictionary<TKey, object?>, IEnumerable<T
 	IEnumerator IEnumerable.GetEnumerator() => InternalKeys.GetEnumerator();
 }
 
-public class WeakKeyDictionary<TKey, TValue> : IMaintanable
+public class WeakKeyDictionary2<TKey, TValue>
+	where TKey : class
+	where TValue : class
+
+{
+	public WeakKeyDictionary2()
+	{
+			
+	}
+
+	private ConditionalWeakTable<TKey, TValue?> _weakTable = new ConditionalWeakTable<TKey, TValue?>();
+
+	public TValue? GetOrAdd(TKey key, Func<TKey, TValue?> valueFactory)
+	{
+		return _weakTable.GetValue(key, key => valueFactory(key));
+	}
+
+	public TValue? this[TKey key]
+	{
+		get => _weakTable.TryGetValue(key, out var value) ? value : null;
+		set => _weakTable.AddOrUpdate(key, value);
+	}
+
+	public int Count => _weakTable.Count();
+}
+
+[Obsolete("Use WeakKeyDictionary2")]
+public class WeakKeyDictionary<TKey, TValue> : IMaintainable
 	// , IDictionary<<EquatableWeakReference, TValue>
 	, IDictionary<TKey, TValue?>
 	, ICollection<KeyValuePair<TKey, TValue?>>
@@ -215,7 +273,7 @@ public class WeakKeyDictionary<TKey, TValue> : IMaintanable
 		}
 	}
 
-	void IMaintanable.Maintenance()
+	void IMaintainable.Maintenance()
 	{
 		CollectGarbageKeys();
 	}
@@ -278,6 +336,13 @@ class EquatableWeakReference : WeakReference, IEquatable<EquatableWeakReference>
 	{
 		_hashCode = target.GetHashCode();
 	}
+
+	/*
+	~EquatableWeakReference()
+	{
+		Maintainer.Instance.Schedule(_maintanable);
+	}
+	*/
 
 	bool IEquatable<EquatableWeakReference>.Equals(EquatableWeakReference? other)
 	{

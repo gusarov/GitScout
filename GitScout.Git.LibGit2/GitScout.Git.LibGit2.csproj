@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GitScout.Git\GitScout.Git.csproj" />
+    <ProjectReference Include="..\GitScout.Utils\GitScout.Utils.csproj" />
   </ItemGroup>
 
 </Project>

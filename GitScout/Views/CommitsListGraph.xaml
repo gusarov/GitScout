@@ -1,0 +1,51 @@
+﻿<UserControl
+	x:Class="GitScout.Views.CommitsListGraph"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	xmlns:system="clr-namespace:System;assembly=System.Runtime"
+	xmlns:settings="clr-namespace:GitScout.Settings"
+	xmlns:datacontext="clr-namespace:GitScout.DataContext"
+	xmlns:controls="clr-namespace:GitScout.Controls"
+	xmlns:viewModels="clr-namespace:GitScout.ViewModels"
+	mc:Ignorable="d"
+	d:DataContext="{d:DesignInstance datacontext:MainDataContext, IsDesignTimeCreatable=True}"
+	d:DesignHeight="450"
+	d:DesignWidth="800">
+	<Grid>
+		<ItemsControl ItemsSource="{Binding CurrentRepoVm.Commits}"  Background="Green">
+			<ItemsControl.Resources>
+				<!--
+				<DataTemplate DataType="{x:Type viewModels:CommitNode}">
+					<Border CornerRadius="5" Background="Red" Padding="10">
+						<StackPanel>
+							<TextBlock Text="{Binding Message}" FontWeight="Bold"/>
+							<TextBlock Text="{Binding Author}"/>
+							<TextBlock Text="{Binding Date}"/>
+						</StackPanel>
+					</Border>
+				</DataTemplate>
+				-->
+			</ItemsControl.Resources>
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<controls:CustomGraphPanel />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<!--
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+					<Border CornerRadius="5" Background="Red" Padding="10">
+						<StackPanel>
+							<TextBlock Text="{Binding Message}" FontWeight="Bold"/>
+							<TextBlock Text="{Binding Author}"/>
+							<TextBlock Text="{Binding Date}"/>
+						</StackPanel>
+					</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			-->
+		</ItemsControl>
+	</Grid>
+</UserControl>

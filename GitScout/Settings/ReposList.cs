@@ -61,6 +61,11 @@ class ErrorGitIntegration : IGitIntegration
 	{
 		return ["Bad Repo"];
 	}
+
+	IEnumerable<ICommitInfo> IGitIntegration.GetCommits()
+	{
+		throw new NotImplementedException();
+	}
 }
 
 internal class UiServiceLocator

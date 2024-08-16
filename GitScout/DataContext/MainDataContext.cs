@@ -29,23 +29,9 @@ internal class ViewModel : INotifyPropertyChanged
 
 class ViewModels
 {
-	public static TViewModel OpenVm<TModel, TViewModel>(TModel model)
-		where TModel : class
-		where TViewModel : class, new()
-	{
-		return ViewModels<TModel, TViewModel>.Instance.GetViewModel(model, model => new TViewModel());
-	}
-
-	public static TViewModel OpenVm<TModel, TViewModel>(TModel model, Func<TModel, TViewModel> factory)
-		where TModel : class
-		where TViewModel : class
-	{
-		return ViewModels<TModel, TViewModel>.Instance.GetViewModel(model, factory);
-	}
-
 	public static RepositoryScopedDataContext OpenVm(RepoInfo repo)
 	{
-		return OpenVm(repo, repo => new RepositoryScopedDataContext(repo));
+		return ObjectExtensions.Get(repo, repo => new RepositoryScopedDataContext(repo));
 	}
 }
 
@@ -59,11 +45,12 @@ class ViewModels<TModel, TViewModel>
 	{
 	}
 
-	WeakKeyDictionary<TModel, TViewModel> _viewModels = new WeakKeyDictionary<TModel, TViewModel>();
+	// WeakKeyDictionary2<TModel, TViewModel> _viewModels = new WeakKeyDictionary2<TModel, TViewModel>();
 
 	public TViewModel GetViewModel(TModel model, Func<TModel, TViewModel> factory)
 	{
-		return _viewModels.GetOrAdd(model, factory)!;
+		return ObjectExtensions<TModel, TViewModel>.Instance.Get(model, factory);
+		// return _viewModels.GetOrAdd(model, factory)!;
 	}
 }
 
