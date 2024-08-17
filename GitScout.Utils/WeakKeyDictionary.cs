@@ -4,10 +4,35 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.Security;
 using System.Runtime.CompilerServices;
+
+public class TrackableObservableCollection<T> : ObservableCollection<T>
+{
+	public TrackableObservableCollection()
+	{
+			
+	}
+
+	public TrackableObservableCollection(IEnumerable<T> source)
+		: base(source)
+	{
+
+	}
+
+	public int Subscribers { get; set; }
+
+	public override event NotifyCollectionChangedEventHandler? CollectionChanged
+	{
+		add { base.CollectionChanged += value; Subscribers++; }
+		remove { base.CollectionChanged -= value; Subscribers--; }
+	}
+}
 
 internal class Maintainer
 {

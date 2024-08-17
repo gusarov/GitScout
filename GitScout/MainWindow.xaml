@@ -16,8 +16,6 @@
 		<KeyBinding Modifiers="Ctrl" Key="O" Command="{Binding OpenRepoCommand}" />
 	</Window.InputBindings>
 	<Window.Resources>
-		<converters:NullToVisibilityConverter x:Key="ntv"/>
-		<converters:CountToVisibilityConverter x:Key="cvc" />
 		<datacontext:DataContextProxy x:Key="proxy" Data="{Binding}"/>
 	</Window.Resources>
 	<DockPanel>
@@ -32,11 +30,11 @@
 					<MenuItem.Header>
 						<StackPanel Orientation="Horizontal">
 							<Image Width="16" Height="16" Source="Resources/RepoOpen.png" Margin="0 0 3 0"/>
-							<TextBlock Visibility="{Binding CurrentRepo, Converter={StaticResource ntv}, ConverterParameter=i}">
+							<TextBlock Visibility="{Binding CurrentRepo, Converter={StaticResource ntv}}">
 								<Run Text="Repo:"/>
 								<Run Text="{Binding CurrentRepo.Short, Mode=OneWay}"/>
 							</TextBlock>
-							<TextBlock Visibility="{Binding CurrentRepo, Converter={StaticResource ntv}}">
+							<TextBlock Visibility="{Binding CurrentRepo, Converter={StaticResource ntv}, ConverterParameter=ic}">
 								<Run Text="Repo:"/>
 								<Italic>
 									<Run Text="none"/>

@@ -66,6 +66,21 @@ public class ObjectExtensionsTests
 	}
 
 	[TestMethod]
+	public void Should_extend_object_with_default_factory()
+	{
+		var commit1 = new MyModel();
+		var commit2 = new MyModel();
+
+		var adaptedCommit1 = ObjectExtensions<MyModel, MyModelExtensionFactorable>.Instance.Get(commit1, x => new MyModelExtensionFactorable(x));
+		var adaptedCommit2 = ObjectExtensions<MyModel, MyModelExtensionFactorable>.Instance.Get(commit2);
+
+		Assert.AreSame(adaptedCommit1, ObjectExtensions<MyModel, MyModelExtensionFactorable>.Instance.Get(commit1, x => new MyModelExtensionFactorable(x)));
+		Assert.AreSame(adaptedCommit2, ObjectExtensions<MyModel, MyModelExtensionFactorable>.Instance.Get(commit2));
+		Assert.AreSame(commit2, adaptedCommit2.Model);
+		Assert.AreSame(commit2, ObjectExtensions<MyModel, MyModelExtensionFactorable>.Instance.Get(commit2).Model);
+	}
+
+	[TestMethod]
 	public void Should_extend_object_with_same_newable_as_factorable()
 	{
 		var commit1 = new MyModel();

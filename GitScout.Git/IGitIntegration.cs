@@ -4,17 +4,23 @@ namespace GitScout.Git;
 
 public interface IGitIntegration
 {
-	public IEnumerable<string> GetBranchNames();
-	public string GetActiveBranchName();
-	public IEnumerable<ICommitInfo> GetCommits();
+	IEnumerable<string> GetBranchNames();
+	string GetActiveBranchName();
+	IEnumerable<ICommitInfo> GetCommits();
 }
 
 public interface IGitIntegrationFactory
 {
-	public IGitIntegration Open(string path);
+	IGitIntegration Open(string path);
 }
 
 public interface ICommitInfo
 {
-	public string Hash { get; }
+	string Hash { get; }
+	string Message { get; }
+	string Author { get; }
+	DateTimeOffset AuthorDate { get; }
+	string Committer { get; }
+	DateTimeOffset CommitterDate { get; }
+	IEnumerable<ICommitInfo> Parents { get; }
 }

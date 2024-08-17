@@ -50,8 +50,24 @@ public class ObjectExtensions<TModel, TExtensions>
 {
 	public static ObjectExtensions<TModel, TExtensions> Instance = new ObjectExtensions<TModel, TExtensions>();
 
-	private ObjectExtensions()
+	static Dictionary<Type, Func<TModel, TExtensions>> DefaultFactories = new Dictionary<Type, Func<TModel, TExtensions>>();
+
+	static ObjectExtensions()
 	{
+		// build info about factories
+		var simpleWrapperConstructor = typeof(TExtensions).GetConstructor([typeof(TModel)]);
+		if (simpleWrapperConstructor != null)
+		{
+			DefaultFactories[typeof(TModel)] = x => (TExtensions)Activator.CreateInstance(typeof(TExtensions), [x]);
+		}
+		else
+		{
+			var simpleConstructor = typeof(TExtensions).GetConstructor([]);
+			if (simpleConstructor != null)
+			{
+				DefaultFactories[typeof(TModel)] = x => Activator.CreateInstance<TExtensions>();
+			}
+		}
 	}
 
 	WeakKeyDictionary2<TModel, TExtensions> _extensions = new WeakKeyDictionary2<TModel, TExtensions>();
@@ -59,6 +75,11 @@ public class ObjectExtensions<TModel, TExtensions>
 	public TExtensions Get(TModel model, Func<TModel, TExtensions> factory)
 	{
 		return _extensions.GetOrAdd(model, factory)!;
+	}
+
+	public TExtensions Get(TModel model)
+	{
+		return _extensions.GetOrAdd(model, DefaultFactories[typeof(TModel)] ?? throw new Exception("Default factory is not registered"))!;
 	}
 }
 

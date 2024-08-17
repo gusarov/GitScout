@@ -14,26 +14,32 @@
 	d:DesignHeight="450"
 	d:DesignWidth="800">
 	<Grid>
-		<ItemsControl ItemsSource="{Binding CurrentRepoVm.Commits}"  Background="Green">
-			<ItemsControl.Resources>
+		<ScrollViewer>
+			<ItemsControl ItemsSource="{Binding CurrentRepoVm.Commits}"  Background="Green">
+				<ItemsControl.Resources>
+					<DataTemplate DataType="{x:Type viewModels:CommitNode}">
+						<Border CornerRadius="5" Background="DarkGray" Padding="5" Margin="2" BorderThickness="1" BorderBrush="Black">
+							<StackPanel>
+								<StackPanel Orientation="Horizontal">
+									<TextBlock Text="{Binding LogicalPositionX}"/>
+									<TextBlock Text=";" />
+									<TextBlock Text="{Binding LogicalPositionY}"/>
+								</StackPanel>
+								<TextBlock Text="{Binding Message}" FontWeight="Bold"/>
+								<TextBlock Text="{Binding Hash}"/>
+								<TextBlock Text="{Binding Author}"/>
+								<TextBlock Text="{Binding AuthorDate}"/>
+							</StackPanel>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.Resources>
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<controls:CustomGraphPanel />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
 				<!--
-				<DataTemplate DataType="{x:Type viewModels:CommitNode}">
-					<Border CornerRadius="5" Background="Red" Padding="10">
-						<StackPanel>
-							<TextBlock Text="{Binding Message}" FontWeight="Bold"/>
-							<TextBlock Text="{Binding Author}"/>
-							<TextBlock Text="{Binding Date}"/>
-						</StackPanel>
-					</Border>
-				</DataTemplate>
-				-->
-			</ItemsControl.Resources>
-			<ItemsControl.ItemsPanel>
-				<ItemsPanelTemplate>
-					<controls:CustomGraphPanel />
-				</ItemsPanelTemplate>
-			</ItemsControl.ItemsPanel>
-			<!--
+			
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
 					<Border CornerRadius="5" Background="Red" Padding="10">
@@ -46,6 +52,7 @@
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			-->
-		</ItemsControl>
+			</ItemsControl>
+		</ScrollViewer>
 	</Grid>
 </UserControl>

@@ -6,12 +6,12 @@ namespace GitScout.DataContext;
 
 static class ViewModelsExtensions
 {
-	public static async Task Sync<T>(this ObservableCollection<T> actual, IEnumerable<T> expected)
+	public static async Task UpdateAsync<T>(this ObservableCollection<T> actual, IEnumerable<T> expected)
 	{
-		await Sync(actual, new HashSet<T>(expected));
+		await UpdateAsync(actual, new HashSet<T>(expected));
 	}
 
-	public static async Task Sync<T>(this ObservableCollection<T> actual, IImmutableSet<T> expectedReusable)
+	public static async Task UpdateAsync<T>(this ObservableCollection<T> actual, IImmutableSet<T> expectedReusable)
 	{
 		// to remove roots
 		List<T> toDelete = new List<T>();
@@ -26,24 +26,27 @@ static class ViewModelsExtensions
 				expectedReusable = expectedReusable.Remove(existingBranch); // remove from pending addition, if it is alread there
 			}
 		}
-		await UiServiceLocator.Instance.Dispatcher.BeginInvoke(() =>
+		if (expectedReusable.Any() || expectedReusable.Any())
 		{
-			foreach (var item in expectedReusable)
+			await UiServiceLocator.Instance.Dispatcher.BeginInvoke(() =>
 			{
-				actual.Add(item);
-			}
-			foreach (var item in toDelete)
-			{
-				actual.Remove(item);
-			}
-		});
+				foreach (var item in expectedReusable)
+				{
+					actual.Add(item);
+				}
+				foreach (var item in toDelete)
+				{
+					actual.Remove(item);
+				}
+			});
+		}
 	}
 
 	// [Obsolete("This method will corrupt original set, make sure it is no longer needed")]
 	/// <summary>
 	/// This method will corrupt original set, make sure it is no longer needed
 	/// </summary>
-	public static async Task SyncConsumeSet<T>(this ObservableCollection<T> actual, ISet<T> expectedReusable)
+	public static async Task UpdateConsumeSetAsync<T>(this ObservableCollection<T> actual, ISet<T> expectedReusable)
 	{
 		// to remove roots
 		List<T> toDelete = new List<T>();

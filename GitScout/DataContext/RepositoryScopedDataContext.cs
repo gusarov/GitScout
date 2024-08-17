@@ -1,5 +1,8 @@
-﻿using GitScout.Settings;
+﻿using GitScout.Git;
+using GitScout.Settings;
+using GitScout.Utils;
 using GitScout.ViewModels;
+using LibGit2Sharp;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GitScout.DataContext
 {
@@ -23,15 +27,73 @@ namespace GitScout.DataContext
 		{
 			_repoInfo = repoInfo;
 			_ = SyncronizeBranchesAsync();
+
+			// var c1 = new CommitNode() { Hash = "e124f76afd86bd87f8818f039697432c062e705d", AuthorDate = DateTime.UtcNow.AddHours(-2), Author = "dmitry.guarov@gmail.com", Message = "Test3" };
+			// var c2 = new CommitNode() { Hash = "e124f76afd86bd87f8818f039697432c062e705e", AuthorDate = DateTime.UtcNow.AddHours(-1), Author = "dmitry.guarov@gmail.com", Message = "Test2", Parents = [c1] };
+			// var c3 = new CommitNode() { Hash = "e124f76afd86bd87f8818f039697432c062e705f", AuthorDate = DateTime.UtcNow.AddHours(-0), Author = "dmitry.guarov@gmail.com", Message = "Test1", Parents = [c2] };
+
+			foreach (var item in repoInfo.Git.GetCommits())
+			{
+				Commits.Add(ObjectExtensions.Get(item, item => new ActualCommitNode(item)));
+			}
+			new CommitsAnalyzer().AnalyzeAsync(Commits).Wait();
+			/*
+
+
+			int rowIndex = 0;
+			// var branchLevels = new Dictionary<string, int>();
+
+			foreach (var commit in Commits.Reverse())
+			{
+				commit.LogicalPosition = new Point(rowIndex, DetermineBranchLevel(commit, branchLevels));
+				rowIndex++;
+			}
+			*/
 		}
+		/*
+
+		private int DetermineBranchLevel(CommitNode commit, Dictionary<string, int> branchLevels)
+		{
+			if (commit.Parents.Count() == 0)
+			{
+				// Root commit, typically the initial commit on mainline
+				return 0;
+			}
+
+			int level = 0;
+			if (commit.Parents.Count() == 1)
+			{
+				// Normal single-parent commit, continue on the same branch
+				var parent = commit.Parents.Single();
+				level = branchLevels.ContainsKey(parent.Hash) ? branchLevels[parent.Hash] : 0;
+			}
+			else
+			{
+				// Merge commit, determine the lowest level of the parents to continue
+				level = commit.Parents.Min(parent => branchLevels.ContainsKey(parent.Hash) ? branchLevels[parent.Hash] : 0);
+			}
+
+			// If this commit starts a new branch, increment the level
+			if (IsNewBranch(commit))
+			{
+				level++;
+			}
+
+			// Store or update the current level of this commit's branch
+			branchLevels[commit.CommitId] = level;
+
+			return level;
+		}
+		private bool IsNewBranch(CommitNodeVisual commit)
+		{
+			// Determine if this commit is the start of a new branch
+			// This is a simplification, you'll need to adjust this based on actual Git data and how you track branches
+			return commit.Parents.Count > 1 || (commit.Parents.Count == 1 && commit.Message.Contains("branch"));
+		}
+		*/
 
 		public ObservableCollection<BranchViewModel> Branches { get; } = new ObservableCollection<BranchViewModel>();
-		public ObservableCollection<CommitNode> Commits { get; } = new ObservableCollection<CommitNode>(new[]
-		{
-			new CommitNode() { CommitId= "e124f76afd86bd87f8818f039697432c062e705f", Date = DateTime.UtcNow.AddHours(-0), Author = "dmitry.guarov@gmail.com", Message = "Test1", Branches = ["master"] },
-			new CommitNode() { CommitId= "e124f76afd86bd87f8818f039697432c062e705e", Date = DateTime.UtcNow.AddHours(-1), Author = "dmitry.guarov@gmail.com", Message = "Test2", Branches = ["test1"] },
-			new CommitNode() { CommitId= "e124f76afd86bd87f8818f039697432c062e705d", Date = DateTime.UtcNow.AddHours(-2), Author = "dmitry.guarov@gmail.com", Message = "Test3", Branches = ["master", "test1"] },
-		});
+		public ObservableCollection<CommitNode> Commits { get; } = new ObservableCollection<CommitNode>();
 
 		async Task SyncronizeBranchesAsync()
 		{
@@ -78,12 +140,12 @@ namespace GitScout.DataContext
 			}
 
 
-			await Branches.SyncConsumeSet(rootBranches);
+			await Branches.UpdateConsumeSetAsync(rootBranches);
 			var queue = new Queue<BranchFolderViewModel>(Branches.OfType<BranchFolderViewModel>());
 			while (queue.Count > 0)
 			{
 				var item = queue.Dequeue();
-				await item.Children.SyncConsumeSet(dicNewChildrens[item]);
+				await item.Children.UpdateConsumeSetAsync(dicNewChildrens[item]);
 				foreach (var subFolder in item.Children.OfType<BranchFolderViewModel>())
 				{
 					queue.Enqueue(subFolder);
