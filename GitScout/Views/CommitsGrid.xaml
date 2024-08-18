@@ -14,8 +14,6 @@
 	d:DesignHeight="450"
 	d:DesignWidth="800">
 	<Grid>
-		<Canvas x:Name="_overlayCanvas" Background="Transparent" IsHitTestVisible="False" ClipToBounds="True" />
-
 		<ListView x:Name="_listView" ScrollViewer.ScrollChanged="listView_ScrollChanged" LayoutUpdated="listView_LayoutUpdated" ItemsSource="{Binding CurrentRepoVm.Commits}" Background="Green" VirtualizingPanel.IsVirtualizing="True">
 			<ItemsControl.Resources>
 				<!--
@@ -37,11 +35,11 @@
 				-->
 			</ItemsControl.Resources>
 			<ListView.View>
-				<GridView AllowsColumnReorder="true" >
-					<GridViewColumn Header="">
+				<GridView AllowsColumnReorder="true" x:Name="_gridView" >
+					<GridViewColumn Header="Graph" Width="{Binding CanvasOverlayWidth,Mode=OneWayToSource}" >
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
-								<Ellipse RenderTransformOrigin=".5 .5" Fill="Blue" Stroke="Red" StrokeThickness="1.5" Width="15" Height="15" Margin="{Binding LineEllipseMargin}">
+								<Ellipse RenderTransformOrigin=".5 .5" Fill="Blue" Width="15" Height="15" Margin="{Binding LineEllipseMargin}">
 									<Ellipse.RenderTransform>
 										<TransformGroup>
 											<ScaleTransform/>
@@ -141,5 +139,6 @@
 			</ItemsControl.ItemTemplate>
 		-->
 		</ListView>
+		<Canvas x:Name="_overlayCanvas" Width="{Binding CanvasOverlayWidth}" HorizontalAlignment="Left" IsHitTestVisible="False" Background="Transparent" ClipToBounds="True" />
 	</Grid>
 </UserControl>

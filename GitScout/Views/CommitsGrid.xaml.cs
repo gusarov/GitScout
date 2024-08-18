@@ -1,4 +1,5 @@
 ﻿using GitScout.Controls;
+using GitScout.Settings;
 using GitScout.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,30 @@ namespace GitScout.Views
 		public CommitsListGraph()
 		{
 			InitializeComponent();
+		}
+
+		protected override void OnInitialized(EventArgs e)
+		{
+			base.OnInitialized(e);
+			UpdateCanvasOverlayWidth();
+		}
+
+		int c = 0;
+		void UpdateCanvasOverlayWidth()
+		{
+			Trace.WriteLine("UpdateCanvasOverlayWidth " + ++c);
+			var aw = _gridView.Columns[0].ActualWidth;
+			if (aw <= 0)
+			{
+				Dispatcher.BeginInvoke(() =>
+				{
+					UpdateCanvasOverlayWidth();
+				});
+			}
+			else
+			{
+				UiServiceLocator.Instance.MainDataContext.CanvasOverlayWidth = aw;
+			}
 		}
 
 		CustomGraphVirtualizingStackPanel _itemsPanel;
@@ -65,6 +90,8 @@ namespace GitScout.Views
 			{
 				if (childPresenter.Content is CommitNode node)
 				{
+					// var t = VisualTreeHelper.GetContentBounds()
+					// var start = childPresenter.TranslatePoint(new Point(20 + 40 * node.LogicalPositionX, childPresenter.ActualHeight / 2), _listView);
 					var branchEllipse = childPresenter.FindChild<Ellipse>();
 					var start = branchEllipse.TranslatePoint(new Point(branchEllipse.ActualWidth / 2, branchEllipse.ActualHeight / 2), _listView);
 					// drawingContext.DrawEllipse(Brushes.Gray, new Pen(Brushes.Blue, 2), start, 8, 8);
@@ -74,6 +101,7 @@ namespace GitScout.Views
 						{
 							var parentBranchEllipse = parentPresenter.FindChild<Ellipse>();
 							var end = parentBranchEllipse.TranslatePoint(new Point(parentBranchEllipse.ActualWidth / 2, parentBranchEllipse.ActualHeight / 2), _listView);
+							// var end = parentPresenter.TranslatePoint(new Point(20 + 40 * parent.LogicalPositionX, parentPresenter.ActualHeight / 2), _listView);
 							// drawingContext.DrawLine(new Pen(Brushes.Gray, 2), start, end);
 							_overlayCanvas.Children.Add(new Line
 							{
@@ -85,7 +113,26 @@ namespace GitScout.Views
 								StrokeThickness = 2,
 							});
 						}
+						else
+						{
+							// we don't see parent due to virtualization, but we know it exists!
+							// So, let's draw a line disappearing to the bottom
+							_overlayCanvas.Children.Add(new Line
+							{
+								X1 = start.X,
+								Y1 = start.Y,
+								X2 = start.X,
+								Y2 = Math.Min(start.Y + 300, _overlayCanvas.ActualHeight),
+								Stroke = new LinearGradientBrush(new GradientStopCollection
+								{
+									new GradientStop(Color.FromArgb(255, Colors.Blue.R, Colors.Blue.G, Colors.Blue.B), 0),
+									new GradientStop(Color.FromArgb(32 , Colors.Blue.R, Colors.Blue.G, Colors.Blue.B), 1),
+								}, 90),
+								StrokeThickness = 2,
+							});
+						}
 					}
+					// _overlayCanvas.Children.Add(new LinePoint(start, node));
 				}
 			}
 		}

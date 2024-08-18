@@ -110,8 +110,19 @@ namespace GitScout.ViewModels
 				else
 				{
 					// If no branch children, this is a new branch
-					commit.LogicalPositionX = activeBranches.Count;
-					activeBranches.Add(commit);
+					var lastActiveMergeIndex = commit.Children.Select(x => activeBranches.IndexOf(x)).Where(x => x != -1).LastOrDefault(-1);
+
+					if (lastActiveMergeIndex != -1)
+					{
+						lastActiveMergeIndex++;
+						commit.LogicalPositionX = lastActiveMergeIndex;
+						activeBranches.Insert(lastActiveMergeIndex, commit);
+					}
+					else
+					{
+						commit.LogicalPositionX = activeBranches.Count;
+						activeBranches.Add(commit);
+					}
 				}
 
 				// Set the j-coordinate

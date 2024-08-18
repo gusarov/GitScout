@@ -77,6 +77,18 @@ internal class MainDataContext : ViewModel
 
 	}
 
+	private double _canvasOverlayWidth;
+
+	public double CanvasOverlayWidth
+	{
+		get => _canvasOverlayWidth;
+		set
+		{
+			_canvasOverlayWidth = value;
+			OnPropertyChanged();
+		}
+	}
+
 	public ReposList ReposList { get; set; }
 	public RepoInfo? CurrentRepo
 	{

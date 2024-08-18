@@ -1,4 +1,5 @@
-﻿using GitScout.Git;
+﻿using GitScout.DataContext;
+using GitScout.Git;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -81,4 +82,5 @@ internal class UiServiceLocator
 
 	public MainWindow MainWindow;
 	public Dispatcher Dispatcher;
+	public MainDataContext MainDataContext;
 }
