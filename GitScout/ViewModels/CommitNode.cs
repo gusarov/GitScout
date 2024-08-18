@@ -1,5 +1,5 @@
 ﻿using GitScout.Git;
-using GitScout.Utils;
+using GitScout;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

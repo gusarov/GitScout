@@ -1,6 +1,6 @@
 ﻿using GitScout.Git;
 using GitScout.Settings;
-using GitScout.Utils;
+using GitScout;
 using GitScout.ViewModels;
 using LibGit2Sharp;
 using System;

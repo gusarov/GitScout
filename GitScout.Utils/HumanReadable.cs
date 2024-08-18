@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
 
-namespace GitScout.Utils;
+namespace GitScout;
 
 public class HumanReadable
 {

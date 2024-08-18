@@ -12,6 +12,7 @@
 	xmlns:converters="clr-namespace:GitScout.Converters"
 	xmlns:controls="clr-namespace:GitScout.Controls"
 	xmlns:views="clr-namespace:GitScout.Views"
+	xmlns:gitscout="clr-namespace:GitScout;assembly=GitScout.Utils"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance datacontext:MainDataContext, IsDesignTimeCreatable=True}"
 	Title="GitScout v1.0"
@@ -66,6 +67,10 @@
 					</MenuItem.ItemContainerStyle>
 				</MenuItem>
 			</Menu>
+			<StackPanel Orientation="Horizontal" Margin="50 0 0 0" VerticalAlignment="Center" TextBlock.FontFamily="Consolas" TextBlock.Foreground="Green">
+				<TextBlock>Debug UI Controls count:</TextBlock>
+				<TextBlock Margin="5 0 0 0" Text="{Binding Statistics.Stats[TrackableTextBlock]}" />
+			</StackPanel>
 		</ToolBar>
 		<Grid DockPanel.Dock="Left">
 			<TreeView Background="Gray">
@@ -103,5 +108,6 @@
 		<Grid>
 			<views:CommitsListGraph DataContext="{Binding}" />
 		</Grid>
+
 	</DockPanel>
 </Window>

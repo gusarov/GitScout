@@ -17,9 +17,9 @@
 			<TextBlock Text=" VirtualSize: " />
 			<TextBlock Text="{Binding Items.Count, StringFormat=N0}" />
 			<TextBlock Text=" Controls: " />
-			<TextBlock Text="{Binding Statistics.TextControlsCount}" />
+			<TextBlock Text="{Binding Statistics.Stats[MyTextBox]}" />
 			<TextBlock Text=" Models: " />
-			<TextBlock Text="{Binding Statistics.DataElementsCount}" />
+			<TextBlock Text="{Binding Statistics.Stats[MyModel]}" />
 		</StackPanel>
 		<!--
 		<ListBox ItemsSource="{Binding Items}" ScrollViewer.IsDeferredScrollingEnabled="{Binding DeferredScroll}">
@@ -30,7 +30,7 @@
 			</ListBox.ItemTemplate>
 		</ListBox>
 		-->
-		<ListView ItemsSource="{Binding Items}" ScrollViewer.IsDeferredScrollingEnabled="{Binding DeferredScroll}" VirtualizingPanel.IsVirtualizing="False">
+		<ListView ItemsSource="{Binding Items}" ScrollViewer.IsDeferredScrollingEnabled="{Binding DeferredScroll}" VirtualizingPanel.CacheLength="20" VirtualizingPanel.CacheLengthUnit="Item" >
 			<ListView.View>
 				<GridView AllowsColumnReorder="true">
 					<GridViewColumn DisplayMemberBinding="{Binding Path=Index}" Header="Index" Width="100"/>

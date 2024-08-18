@@ -8,13 +8,20 @@
 	xmlns:settings="clr-namespace:GitScout.Settings"
 	xmlns:datacontext="clr-namespace:GitScout.DataContext"
 	xmlns:controls="clr-namespace:GitScout.Controls"
-	xmlns:viewModels="clr-namespace:GitScout.ViewModels"
+	xmlns:viewModels="clr-namespace:GitScout.ViewModels" xmlns:gitscout="clr-namespace:GitScout"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance datacontext:MainDataContext, IsDesignTimeCreatable=True}"
 	d:DesignHeight="450"
 	d:DesignWidth="800">
 	<Grid>
-		<ListView x:Name="_listView" ScrollViewer.ScrollChanged="listView_ScrollChanged" ItemsSource="{Binding CurrentRepoVm.Commits}" Background="Green" VirtualizingPanel.IsVirtualizing="True">
+		<ListView
+			x:Name="_listView"
+			ScrollViewer.ScrollChanged="listView_ScrollChanged"
+			ItemsSource="{Binding CurrentRepoVm.Commits}"
+			VirtualizingPanel.IsVirtualizing="True"
+			VirtualizingPanel.CacheLength="20"
+			VirtualizingPanel.CacheLengthUnit="Item"
+			>
 			<ItemsControl.Resources>
 				<!--
 				<DataTemplate DataType="{x:Type viewModels:CommitNode}">
@@ -83,7 +90,8 @@
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<!--
+
+					<!-- Debug
 					<GridViewColumn Header="(y,x)">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
@@ -98,13 +106,14 @@
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
 					-->
+					
 					<GridViewColumn DisplayMemberBinding="{Binding Message}" Header="Message" />
 					<GridViewColumn DisplayMemberBinding="{Binding Author}" Header="Author" />
 					<GridViewColumn DisplayMemberBinding="{Binding AuthorDate}" Header="AuthorDate" />
 					<GridViewColumn Header="Hash" >
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
-								<TextBlock Text="{Binding Hash}" FontFamily="Consolas" />
+								<controls:TrackableTextBlock Text="{Binding Hash}" FontFamily="Consolas" />
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>

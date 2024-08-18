@@ -1,4 +1,4 @@
-﻿using GitScout.Utils;
+﻿using GitScout;
 using System;
 using System.Collections;
 using System.Collections.Generic;

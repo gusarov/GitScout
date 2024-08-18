@@ -16,20 +16,15 @@ public class MyModel : IVirtualizableModel
 	{
 		Owner = owner;
 		_key = key;
-		lock (MainWindow.MainDataContext)
-		{
-			Statistics.Instance.DataElementsCount++;
-		}
+		ObjectCountTracker.Instance.RegisterConstruction(this);
 	}
 
-
+#if DEBUG
 	~MyModel()
 	{
-		lock (MainWindow.MainDataContext)
-		{
-			Statistics.Instance.DataElementsCount--;
-		}
+		ObjectCountTracker.Instance.RegisterDestruction(this);
 	}
+#endif
 
 	public string Hash { get; set; } = Guid.NewGuid().ToString();
 

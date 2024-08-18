@@ -1,4 +1,4 @@
-﻿using GitScout.Utils;
+﻿using GitScout;
 using LibGit2Sharp;
 using System.Runtime.InteropServices;
 

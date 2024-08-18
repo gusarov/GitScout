@@ -1,6 +1,7 @@
 using GitScout.Git;
 using GitScout.ViewModels;
 using System.Net.Http.Headers;
+using GitScout;
 
 namespace GitScout.Tests;
 

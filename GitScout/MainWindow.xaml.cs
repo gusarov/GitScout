@@ -71,6 +71,11 @@ public partial class MainWindow : Window
 		UiServiceLocator.Instance.Dispatcher = Dispatcher;
 		UiServiceLocator.Instance.MainDataContext = sp.GetRequiredService<MainDataContext>();
 
+		ObjectCountTracker.Instance.PropertyChangedNeedDispatching += (s, action) =>
+		{
+			Dispatcher.BeginInvoke(action);
+		};
+
 		DataContext = UiServiceLocator.Instance.MainDataContext;
 	}
 

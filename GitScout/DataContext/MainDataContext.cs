@@ -1,6 +1,6 @@
 ﻿using GitScout.Commands;
 using GitScout.Settings;
-using GitScout.Utils;
+using GitScout;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
@@ -76,6 +76,8 @@ internal class MainDataContext : ViewModel
 		_settings = settings;
 
 	}
+
+	public ObjectCountTracker Statistics { get; } = ObjectCountTracker.Instance;
 
 	private double _canvasOverlayWidth;
 

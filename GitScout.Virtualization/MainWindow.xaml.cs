@@ -22,9 +22,7 @@ public partial class MainWindow : Window
 	{
 		MainWindowInstance = this;
 		DataContext = MainDataContext = new MainDataContext();
+		ObjectCountTracker.Instance.PropertyChangedNeedDispatching += (s, action) => Dispatcher.BeginInvoke(action);
 		InitializeComponent();
-		// DataContext = new IntMaxCollection<MyClass>();
-		// DataContext = new ObservableCollection<MyClass>([new MyClass(), new MyClass(), new MyClass(),]);
-		// DataContext = new List<MyClass>([new MyClass(), new MyClass(), new MyClass(),]);
 	}
 }

@@ -1,5 +1,5 @@
 ﻿using GitScout.DataContext;
-using GitScout.Utils;
+using GitScout;
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;

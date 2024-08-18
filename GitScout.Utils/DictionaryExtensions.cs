@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace GitScout.Utils;
+namespace GitScout;
 
 public static class DictionaryExtensions
 {

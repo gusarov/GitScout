@@ -1,16 +1,17 @@
 ﻿using System.Windows.Controls;
+using GitScout.DataContext;
 
-namespace GitScout.Virtualization;
+namespace GitScout.Controls;
 
-public class MyTextBox : TextBox
+public class TrackableTextBlock : TextBlock
 {
-	public MyTextBox()
+	public TrackableTextBlock()
 	{
 		ObjectCountTracker.Instance.RegisterConstruction(this);
 	}
 
 #if DEBUG
-	~MyTextBox()
+	~TrackableTextBlock()
 	{
 		ObjectCountTracker.Instance.RegisterDestruction(this);
 	}

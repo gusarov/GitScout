@@ -1,4 +1,4 @@
-﻿using GitScout.Utils;
+﻿using GitScout;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;

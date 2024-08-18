@@ -1,4 +1,4 @@
-﻿namespace GitScout.Utils;
+﻿namespace GitScout;
 
 using Microsoft.VisualBasic;
 using System;

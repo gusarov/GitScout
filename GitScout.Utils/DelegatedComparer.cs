@@ -1,4 +1,4 @@
-﻿namespace GitScout.Utils;
+﻿namespace GitScout;
 
 public static class DelegatedComparer
 {
