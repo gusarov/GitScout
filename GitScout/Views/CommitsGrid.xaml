@@ -14,7 +14,7 @@
 	d:DesignHeight="450"
 	d:DesignWidth="800">
 	<Grid>
-		<ListView x:Name="_listView" ScrollViewer.ScrollChanged="listView_ScrollChanged" LayoutUpdated="listView_LayoutUpdated" ItemsSource="{Binding CurrentRepoVm.Commits}" Background="Green" VirtualizingPanel.IsVirtualizing="True">
+		<ListView x:Name="_listView" ScrollViewer.ScrollChanged="listView_ScrollChanged" ItemsSource="{Binding CurrentRepoVm.Commits}" Background="Green" VirtualizingPanel.IsVirtualizing="True">
 			<ItemsControl.Resources>
 				<!--
 				<DataTemplate DataType="{x:Type viewModels:CommitNode}">
@@ -83,6 +83,7 @@
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
+					<!--
 					<GridViewColumn Header="(y,x)">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
@@ -96,10 +97,17 @@
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
+					-->
 					<GridViewColumn DisplayMemberBinding="{Binding Message}" Header="Message" />
-					<GridViewColumn DisplayMemberBinding="{Binding Hash}" Header="Hash" />
 					<GridViewColumn DisplayMemberBinding="{Binding Author}" Header="Author" />
 					<GridViewColumn DisplayMemberBinding="{Binding AuthorDate}" Header="AuthorDate" />
+					<GridViewColumn Header="Hash" >
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Hash}" FontFamily="Consolas" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
 
 					<!--
 					<GridViewColumn DisplayMemberBinding="{Binding Path=Index}" Header="Index" Width="100"/>
@@ -139,6 +147,6 @@
 			</ItemsControl.ItemTemplate>
 		-->
 		</ListView>
-		<Canvas x:Name="_overlayCanvas" Width="{Binding CanvasOverlayWidth}" HorizontalAlignment="Left" IsHitTestVisible="False" Background="Transparent" ClipToBounds="True" />
+		<Canvas x:Name="_overlayCanvas" Width="{Binding CanvasOverlayWidth}" SizeChanged="_overlayCanvas_SizeChanged" HorizontalAlignment="Left" IsHitTestVisible="False" Background="Transparent" ClipToBounds="True" />
 	</Grid>
 </UserControl>

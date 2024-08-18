@@ -82,5 +82,24 @@ namespace GitScout.Controls
 			}
 			return foundChild;
 		}
+
+		public static IEnumerable<DependencyObject> GetAllChild(this DependencyObject parent)
+		{
+			if (parent == null)
+			{
+				yield break;
+			}
+
+			int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+			for (int i = 0; i < childrenCount; i++)
+			{
+				var child = VisualTreeHelper.GetChild(parent, i);
+				yield return child;
+				foreach (var subChild in GetAllChild(child))
+				{
+					yield return subChild;
+				}
+			}
+		}
 	}
 }

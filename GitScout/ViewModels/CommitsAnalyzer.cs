@@ -19,6 +19,178 @@ namespace GitScout.ViewModels
 	{
 		public int CountOfLines { get; set; }
 
+		#region Straight
+
+		private async Task AnalyzeStraightAsync(IReadOnlyList<CommitNode> commits)
+		{
+			var activeBranches = new List<CommitNode?>();  // List to maintain active branches
+
+			foreach (var commit in commits)
+			{
+				var forbiddenIndices = GetForbiddenIndices(commit, activeBranches);
+				CommitNode replacementChild = null;
+				int replacementIndex = -1;
+
+				// Find a child that can replace its position in active branches
+				foreach (var child in commit.BranchChildren)
+				{
+					var childIndex = activeBranches.IndexOf(child);
+					if (childIndex != -1 && !forbiddenIndices.Contains(childIndex))
+					{
+						replacementChild = child;
+						replacementIndex = childIndex;
+						break;
+					}
+				}
+
+				if (replacementChild != null)
+				{
+					// Replace the child with the current commit in the active branches
+					activeBranches[replacementIndex] = commit;
+				}
+				else
+				{
+					// Insert the current commit in the active branches
+					activeBranches.Add(commit);
+					replacementIndex = activeBranches.Count - 1;
+				}
+
+				// Set all other branch children's positions to nil
+				foreach (var child in commit.BranchChildren.Where(c => c != replacementChild))
+				{
+					var childIndex = activeBranches.IndexOf(child);
+					if (childIndex != -1)
+					{
+						activeBranches[childIndex] = null;
+					}
+				}
+
+				commit.LogicalPositionX = replacementIndex;  // Assigning column index to LogicalPositionX
+			}
+		}
+
+		private HashSet<int> GetForbiddenIndices(CommitNode commit, List<CommitNode> activeBranches)
+		{
+			// todo use sliding interval tree to dramatically optimize this
+			var forbidden = new HashSet<int>();
+
+			foreach (var branch in activeBranches)
+			{
+				if (Intersects(commit, branch))
+				{
+					int index = activeBranches.IndexOf(branch);
+					forbidden.Add(index);
+				}
+			}
+
+			return forbidden;
+		}
+
+
+		private int AssignColumn(CommitNode commit, HashSet<int> forbiddenIndices, List<CommitNode> activeBranches)
+		{
+			for (int i = 0; i <= activeBranches.Count; i++)
+			{
+				if (!forbiddenIndices.Contains(i))
+				{
+					if (i == activeBranches.Count)
+						activeBranches.Add(commit);  // Adding new branch
+					else
+						activeBranches[i] = commit;  // Replacing existing branch
+					return i;
+				}
+			}
+
+			return -1;  // Should never hit this case if logic is correct
+		}
+
+		private bool Intersects(CommitNode commit, CommitNode branch)
+		{
+			return false;
+			/*
+			// Assuming each commit has a 'Height' representing its space on the graph
+			// And 'StartY' which is its starting Y coordinate on the graph
+			int commitEndY = commit.StartY + commit.Height;
+			int branchEndY = branch.StartY + branch.Height;
+
+			// Check if the vertical (Y-axis) intervals of commit and branch overlap
+			bool verticalOverlap = (commit.StartY < branchEndY && commitEndY > branch.StartY) ||
+								   (branch.StartY < commitEndY && branchEndY > commit.StartY);
+
+			return verticalOverlap;
+			*/
+		}
+
+		private void UpdateColumnAvailability(CommitNode commit, int columnIndex, Dictionary<CommitNode, int> commitToColumn, List<int> columnAvailability)
+		{
+			commitToColumn[commit] = columnIndex;
+			while (columnAvailability.Count <= columnIndex)
+				columnAvailability.Add(0); // Ensure the list is long enough
+			columnAvailability[columnIndex]++; // Mark this column as used by one more commit
+		}
+
+		#endregion
+
+		private async Task AnalyzeCurvedAsync(IReadOnlyList<CommitNode> commits)
+		{
+			var activeBranches = new List<CommitNode>();
+
+			foreach (var commit in commits)
+			{
+				if (commit.BranchChildren.Count > 0)
+				{
+					// Find and replace the active branch if possible
+					var index = activeBranches.FindIndex(b => commit.BranchChildren.Contains(b));
+					if (index != -1)
+					{
+						activeBranches[index] = commit;  // Replace the branch with the new commit
+						commit.LogicalPositionX = index;
+					}
+					else
+					{
+						// If no active branch to replace, add new
+						commit.LogicalPositionX = activeBranches.Count;
+						activeBranches.Add(commit);
+					}
+
+					// Remove all other branch children from active branches
+					foreach (var child in commit.BranchChildren)
+					{
+						var childIndex = activeBranches.IndexOf(child);
+						if (childIndex != -1 && childIndex != index)
+						{
+							activeBranches.RemoveAt(childIndex);
+						}
+					}
+				}
+				else
+				{
+					/*
+					commit.LogicalPositionX = activeBranches.Count;
+					activeBranches.Add(commit);
+					*/
+					// If no branch children, this is a new branch
+					var lastActiveMergeIndex = commit.Children.Select(x => activeBranches.IndexOf(x)).Where(x => x != -1).LastOrDefault(-1);
+
+					if (lastActiveMergeIndex != -1)
+					{
+						lastActiveMergeIndex++;
+						commit.LogicalPositionX = lastActiveMergeIndex;
+						activeBranches.Insert(lastActiveMergeIndex, commit);
+					}
+					else
+					{
+						commit.LogicalPositionX = activeBranches.Count;
+						activeBranches.Add(commit);
+					}
+				}
+
+				// Set the j-coordinate
+				// commit.LogicalPositionX = activeBranches.IndexOf(commit);
+			}
+
+		}
+
 		public async Task AnalyzeAsync(IEnumerable<CommitNode> commits)
 		{
 			// build a bidirectional counterparts:
@@ -77,57 +249,8 @@ namespace GitScout.ViewModels
 				}
 			}
 
-			var activeBranches = new List<CommitNode>();
-
-			foreach (var commit in commits)
-			{
-				if (commit.BranchChildren.Count > 0)
-				{
-					// Find and replace the active branch if possible
-					var index = activeBranches.FindIndex(b => commit.BranchChildren.Contains(b));
-					if (index != -1)
-					{
-						activeBranches[index] = commit;  // Replace the branch with the new commit
-						commit.LogicalPositionX = index;
-					}
-					else
-					{
-						// If no active branch to replace, add new
-						commit.LogicalPositionX = activeBranches.Count;
-						activeBranches.Add(commit);
-					}
-
-					// Remove all other branch children from active branches
-					foreach (var child in commit.BranchChildren)
-					{
-						var childIndex = activeBranches.IndexOf(child);
-						if (childIndex != -1 && childIndex != index)
-						{
-							activeBranches.RemoveAt(childIndex);
-						}
-					}
-				}
-				else
-				{
-					// If no branch children, this is a new branch
-					var lastActiveMergeIndex = commit.Children.Select(x => activeBranches.IndexOf(x)).Where(x => x != -1).LastOrDefault(-1);
-
-					if (lastActiveMergeIndex != -1)
-					{
-						lastActiveMergeIndex++;
-						commit.LogicalPositionX = lastActiveMergeIndex;
-						activeBranches.Insert(lastActiveMergeIndex, commit);
-					}
-					else
-					{
-						commit.LogicalPositionX = activeBranches.Count;
-						activeBranches.Add(commit);
-					}
-				}
-
-				// Set the j-coordinate
-				// commit.LogicalPositionX = activeBranches.IndexOf(commit);
-			}
+			await AnalyzeCurvedAsync(commitsList);
+			// await AnalyzeStraightAsync(commitsList);
 
 #if A
 			// now breadth first calculate the depth and leafs. TODO this assumes no unrelated graphs, need to scan for it using visited map
