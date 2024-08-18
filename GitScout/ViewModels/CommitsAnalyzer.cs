@@ -72,7 +72,7 @@ namespace GitScout.ViewModels
 					}
 					else
 					{
-						commit.MergeChildren.Add(child);
+						// commit.MergeChildren.Add(child);
 					}
 				}
 			}
@@ -88,10 +88,12 @@ namespace GitScout.ViewModels
 					if (index != -1)
 					{
 						activeBranches[index] = commit;  // Replace the branch with the new commit
+						commit.LogicalPositionX = index;
 					}
 					else
 					{
 						// If no active branch to replace, add new
+						commit.LogicalPositionX = activeBranches.Count;
 						activeBranches.Add(commit);
 					}
 
@@ -108,11 +110,12 @@ namespace GitScout.ViewModels
 				else
 				{
 					// If no branch children, this is a new branch
+					commit.LogicalPositionX = activeBranches.Count;
 					activeBranches.Add(commit);
 				}
 
 				// Set the j-coordinate
-				commit.LogicalPositionX = activeBranches.IndexOf(commit);
+				// commit.LogicalPositionX = activeBranches.IndexOf(commit);
 			}
 
 #if A

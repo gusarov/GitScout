@@ -26,6 +26,7 @@ namespace GitScout.ViewModels
 		public virtual TrackableObservableCollection<CommitsLine> Lines { get; init; } = new TrackableObservableCollection<CommitsLine>();
 
 
+		public Thickness LineEllipseMargin => new Thickness(LogicalPositionX * 40, 0, 0, 0);
 		public int LogicalPositionX { get; set; }
 		public int LogicalPositionY { get; set; }
 		public int LogicalHeight { get; set; }

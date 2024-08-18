@@ -30,7 +30,7 @@ public class LibGit2GitIntegration : IGitIntegration
 		{
 			SortBy = CommitSortStrategies.Topological | CommitSortStrategies.Time,
 			IncludeReachableFrom = _repository.Refs,
-		});
+		}).Take(1000);
 		return allCommits.Select(x => x.GetLibGit2CommitInfo(nodes));
 	}
 }
@@ -64,13 +64,20 @@ public static class LibGit2Extensions
 {
 	public static LibGit2CommitInfo GetLibGit2CommitInfo(this Commit commit, Dictionary<string, Commit> set)
 	{
+		// LibGit2 returns parent objects as a new object instead of reference to parent in original list.
+		// So, I have to redirect this object to the one already visited while traversing this graph.
 		ref var knownCommit = ref CollectionsMarshal.GetValueRefOrAddDefault(set, commit.Sha, out _);
 		if (knownCommit == null)
 		{
 			knownCommit = commit;
 		}
 		var known = knownCommit;
-		return ObjectExtensions.Get(commit, x => ObjectExtensions<Commit, LibGit2CommitInfo>.Instance.Get(known, k => new LibGit2CommitInfo(k, set)));
+		// It is importnat to register "commit" but instantiate by "known", and if it is different known, it is important to resolve.
+		// After this, even if we resolve extension not by this method but directly - it will still work properly
+		return ObjectExtensions.Get(commit, x => ReferenceEquals(x, known)
+			? new LibGit2CommitInfo(commit, set)
+			: ObjectExtensions.Get(known, k => new LibGit2CommitInfo(k, set)));
+		// return ObjectExtensions.Get(commit, x => ObjectExtensions.Get(known, k => new LibGit2CommitInfo(k, set)));
 	}
 }
 

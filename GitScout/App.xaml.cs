@@ -41,23 +41,32 @@ public partial class App : Application
 		Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("CommonDictionary.xaml", UriKind.Relative) });
 	}
 
+	static bool? _isDark;
+
 	public static bool IsWindowsThemeDark()
 	{
-		// return false;
-		const string registryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
-		const string registryValueName = "AppsUseLightTheme";
-
-		using (var key = Registry.CurrentUser.OpenSubKey(registryKeyPath))
+		if (_isDark == null)
 		{
-			var registryValueObj = key?.GetValue(registryValueName);
-			if (registryValueObj == null)
-			{
-				return false; // Default to dark theme if the setting is not found
-			}
+#if DEBUG
+			_isDark = Random.Shared.Next(2) == 0;
+			return _isDark.Value;
+#endif
+			const string registryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
+			const string registryValueName = "AppsUseLightTheme";
 
-			var registryValue = (int)registryValueObj;
-			return registryValue <= 0; // 0 means dark theme, 1 means light theme
+			using (var key = Registry.CurrentUser.OpenSubKey(registryKeyPath))
+			{
+				var registryValueObj = key?.GetValue(registryValueName);
+				if (registryValueObj == null)
+				{
+					return false; // Default to dark theme if the setting is not found
+				}
+
+				var registryValue = (int)registryValueObj;
+				_isDark = registryValue <= 0; // 0 means dark theme, 1 means light theme
+			}
 		}
+		return _isDark.Value;
 	}
 }
 

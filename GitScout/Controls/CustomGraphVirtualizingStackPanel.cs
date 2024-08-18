@@ -6,12 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Ink;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace GitScout.Controls
 {
-	public class CustomGraphPanel : StackPanel
+	public class CustomGraphVirtualizingStackPanel : VirtualizingStackPanel
 	{
+		public CustomGraphVirtualizingStackPanel()
+		{
+			// SetHorizontalOffset(200);
+			// SetVerticalOffset(200);
+		}
 		/*
 		protected override Size MeasureOverride(Size availableSize)
 		{
@@ -21,7 +28,6 @@ namespace GitScout.Controls
 			}
 			return base.MeasureOverride(availableSize);
 		}
-		*/
 
 		protected override Size ArrangeOverride(Size finalSize)
 		{
@@ -39,31 +45,42 @@ namespace GitScout.Controls
 			}
 			return finalSize;
 		}
+		*/
 
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			base.OnRender(drawingContext);
 
 			// Draw connections
-			var contentPresenterChildren = Children.OfType<ContentPresenter>().ToArray();
-			var byContent = contentPresenterChildren.ToDictionary(x => (CommitNode)x.Content);
-			foreach (var child in contentPresenterChildren)
+
+		}
+
+	}
+
+	public static class VisualTreeExtensions
+	{
+		public static T FindChild<T>(this DependencyObject parent) where T : DependencyObject
+		{
+			if (parent == null) return null;
+
+			T foundChild = null;
+			int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+
+			for (int i = 0; i < childrenCount; i++)
 			{
-				if (child.Content is CommitNode node)
+				var child = VisualTreeHelper.GetChild(parent, i);
+				if (child is T)
 				{
-					var start = child.TranslatePoint(new Point(-20, child.ActualHeight / 2), this);
-					drawingContext.DrawEllipse(Brushes.Black, new Pen(Brushes.Blue, 2), start, 8, 8);
-					foreach (var parent in node.Parents)
-					{
-						var parentPresenter = byContent[parent];
-						if (parentPresenter != null)
-						{
-							var end = parentPresenter.TranslatePoint(new Point(-20, parentPresenter.ActualHeight / 2), this);
-							drawingContext.DrawLine(new Pen(Brushes.Black, 2), start, end);
-						}
-					}
+					foundChild = (T)child;
+					break;
+				}
+				else
+				{
+					foundChild = FindChild<T>(child);
+					if (foundChild != null) break;
 				}
 			}
+			return foundChild;
 		}
 	}
 }

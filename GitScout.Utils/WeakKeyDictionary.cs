@@ -1,5 +1,6 @@
 ﻿namespace GitScout.Utils;
 
+using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -11,6 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Security;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 public class TrackableObservableCollection<T> : ObservableCollection<T>
 {
@@ -395,4 +397,81 @@ class EquatableWeakReference : WeakReference, IEquatable<EquatableWeakReference>
 	{
 		return _hashCode;
 	}
+}
+
+public class WeakValueDictionary<TKey, TValue>
+	where TValue : class
+
+{
+	class Controller
+	{
+		private readonly IDictionary _dic;
+		private readonly TKey _key;
+
+		public Controller(IDictionary dic, TKey key)
+		{
+			_dic = dic;
+			_key = key;
+		}
+
+		~Controller()
+		{
+			lock (_dic)
+			{
+				_dic.Remove(_key);
+			}
+		}
+
+		public void Release()
+		{
+			GC.SuppressFinalize(this);
+		}
+	}
+
+	Dictionary<TKey, WeakReference<TValue>> _dictionary = new Dictionary<TKey, WeakReference<TValue>>();
+	private readonly ConditionalWeakTable<TValue, Controller> _controllers = new ConditionalWeakTable<TValue, Controller>();
+
+	public TValue GetOrAdd(TKey key, Func<TKey, TValue> factory)
+	{
+		lock (_dictionary)
+		{
+			ref var valuePlaceholder = ref CollectionsMarshal.GetValueRefOrAddDefault(_dictionary, key, out bool exists);
+			TValue? targetValue = null;
+			var isAlive = valuePlaceholder?.TryGetTarget(out targetValue) ?? false;
+			if (!exists || !isAlive || valuePlaceholder == null || targetValue == null)
+			{
+				var value = factory(key);
+				valuePlaceholder = new WeakReference<TValue>(value); // assigning ref local also inherently updates dictionary
+				_controllers.Add(value, new Controller(_dictionary, key));
+				return value;
+			}
+			else
+			{
+				return targetValue;
+			}
+		}
+	}
+
+	public TValue? this[TKey key]
+	{
+		get
+		{
+			ref var valuePlaceholder = ref CollectionsMarshal.GetValueRefOrAddDefault(_dictionary, key, out bool exists);
+			TValue? targetValue = null;
+			valuePlaceholder?.TryGetTarget(out targetValue);
+			return targetValue;
+		}
+		set
+		{
+			_dictionary[key] = new WeakReference<TValue>(value);
+			_controllers.TryGetValue(value, out var controller);
+			if (controller != null)
+			{
+				controller.Release(); // we should make sure that previus controller is disengaged, otherwise it will kill new entry
+			}
+			_controllers.AddOrUpdate(value, new Controller(_dictionary, key));
+		}
+	}
+
+	public int Count => _dictionary.Count;
 }

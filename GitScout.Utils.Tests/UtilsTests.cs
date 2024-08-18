@@ -133,7 +133,7 @@ public class HumanReadableUtilsTests
 }
 
 [TestClass]
-public class WeakCacheTests
+public class WeakKeyTests
 {
 	[TestMethod]
 	public void Should_keep_by_key()
@@ -169,7 +169,7 @@ public class WeakCacheTests
 		GC.WaitForFullGCApproach();
 		Assert.IsFalse(wr.IsAlive);
 
-		while(dic.Count != 0)
+		while (dic.Count != 0)
 		{
 			Thread.Sleep(100);
 		}
@@ -179,6 +179,60 @@ public class WeakCacheTests
 	}
 
 	class DemoKey
+	{
+
+	}
+}
+
+[TestClass]
+public class WeakValueTests
+{
+	[TestMethod]
+	public void Should_keep_by_key()
+	{
+		var dic = new WeakValueDictionary<string, DemoValue>();
+
+		var value1 = new DemoValue();
+		var value2 = new DemoValue();
+
+		dic["a"] = value1;
+		dic["b"] = value2;
+
+		Assert.AreEqual(value1, dic["a"]);
+		Assert.AreEqual(value2, dic["b"]);
+	}
+
+	WeakReference Register(string key, WeakValueDictionary<string, DemoValue> sut)
+	{
+		var value = new DemoValue();
+		var wr = new WeakReference(value);
+		sut[key] = value;
+		return wr;
+	}
+
+	[TestMethod]
+	public void Should_allow_values_to_be_collected()
+	{
+		var dic = new WeakValueDictionary<string, DemoValue>();
+
+		var wr = Register("a", dic);
+		Assert.IsTrue(wr.IsAlive);
+		Assert.AreEqual(1, dic.Count);
+
+		GC.Collect();
+		GC.WaitForFullGCApproach();
+		Assert.IsFalse(wr.IsAlive);
+
+		while (dic.Count != 0)
+		{
+			Thread.Sleep(100);
+		}
+		// Assert.AreEqual(1, dic.Count);
+		// Thread.Sleep(TimeSpan.FromSeconds(3));
+		Assert.AreEqual(0, dic.Count);
+	}
+
+	class DemoValue
 	{
 
 	}

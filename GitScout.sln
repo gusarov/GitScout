@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitScout.ConsoleTest", "Git
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitScout.Utils.Tests", "GitScout.Utils.Tests\GitScout.Utils.Tests.csproj", "{95A3037C-7CF8-4966-8895-97C13A3722CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitScout.Tests", "GitScout.Tests\GitScout.Tests.csproj", "{02BD2B4C-5EEF-41CA-BCFD-A08243599BA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitScout.Tests", "GitScout.Tests\GitScout.Tests.csproj", "{02BD2B4C-5EEF-41CA-BCFD-A08243599BA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitScout.Virtualization", "GitScout.Virtualization\GitScout.Virtualization.csproj", "{8DB4BF42-3799-4F12-85DB-01C1AFB4CC7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +89,10 @@ Global
 		{02BD2B4C-5EEF-41CA-BCFD-A08243599BA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02BD2B4C-5EEF-41CA-BCFD-A08243599BA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02BD2B4C-5EEF-41CA-BCFD-A08243599BA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DB4BF42-3799-4F12-85DB-01C1AFB4CC7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB4BF42-3799-4F12-85DB-01C1AFB4CC7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DB4BF42-3799-4F12-85DB-01C1AFB4CC7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DB4BF42-3799-4F12-85DB-01C1AFB4CC7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
